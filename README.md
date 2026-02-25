@@ -18,14 +18,40 @@ go run main.go
 
 The server starts on http://localhost:8080.
 
+## API Endpoints
+
+### GET /items
+
+Returns all available items.
+
+```bash
+curl http://localhost:8080/items
+```
+
+### POST /orders
+
+Creates an order with mock payment processing.
+
+```bash
+curl -X POST http://localhost:8080/orders \
+  -H "Content-Type: application/json" \
+  -d '{"user_id": 1, "items": [{"item_id": 1, "quantity": 2}]}'
+```
+
+## Running Tests
+
+```bash
+go test -v ./handlers/
+```
+
 ## Branch Guide
 
 Each lecture has two branches:
 
 | Branch | Purpose |
 |--------|---------|
-| `week-XX/lecture-XX` | **Starter** — empty scaffold with TODOs. Fork from here at the start of class. |
-| `week-XX/lecture-XX-final` | **Final** — completed code from the lecture. Compare your work against this. |
+| `week-XX/lecture-XX` | **Starter** — scaffold with TODOs and pre-written tests. Fork from here at the start of class. |
+| `week-XX/lecture-XX-final` | **Final** — completed code matching the lecture. Compare your work against this. |
 
 ### Available Branches
 
@@ -36,11 +62,11 @@ Each lecture has two branches:
 
 ```
 checkout-api/
-├── main.go              # HTTP server entry point
-├── models/models.go     # Domain models (Item, Cart, Order)
-├── store/memory.go      # In-memory data storage
-├── handlers/handlers.go # HTTP route handlers
-└── docs/                # Documentation and ADRs
+├── main.go                  # HTTP server entry point
+├── models/models.go         # Domain models (Item, LineItem, Order)
+├── store/store.go           # In-memory data storage
+├── handlers/handlers.go     # HTTP route handlers
+└── handlers/handlers_test.go # Table-driven handler tests
 ```
 
 ## License
