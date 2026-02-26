@@ -118,7 +118,6 @@ func (h *Handler) CreateUserCartAndAddItems(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	//cart already created?
 	if h.store.GetUserCart(req.UserID) != nil {
 		http.Error(w, "cart already exists", http.StatusConflict)
 		return
@@ -154,18 +153,7 @@ func (h *Handler) CreateUserCartAndAddItems(w http.ResponseWriter, r *http.Reque
 
 }
 
-func (h *Handler) UpdateOrRemoveItemFromCart(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodPatch:
-		h.updateCartItem(w, r)
-	case http.MethodDelete:
-		h.removeCartItem(w, r)
-	default:
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-	}
-}
-
-func (h *Handler) updateCartItem(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) UpdateCartItem(w http.ResponseWriter, r *http.Request) {
 	pathParts := strings.Split(r.URL.Path, "/")
 	if len(pathParts) < 5 {
 		http.Error(w, "invalid path", http.StatusBadRequest)
@@ -198,7 +186,7 @@ func (h *Handler) updateCartItem(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, cart)
 }
 
-func (h *Handler) removeCartItem(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) RemoveCartItem(w http.ResponseWriter, r *http.Request) {
 	pathParts := strings.Split(r.URL.Path, "/")
 	if len(pathParts) < 5 {
 		http.Error(w, "invalid path", http.StatusBadRequest)
