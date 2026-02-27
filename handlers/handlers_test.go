@@ -108,7 +108,7 @@ func TestGetUserCart(t *testing.T) {
 	tests := []struct {
 		name       string
 		method     string
-		body       string
+		userID     string
 		setupCart  bool
 		wantStatus int
 		wantBody   string
@@ -116,7 +116,7 @@ func TestGetUserCart(t *testing.T) {
 		{
 			name:       "cart does not exist - returns empty cart",
 			method:     http.MethodGet,
-			body:       `{"user_id":1}`,
+			userID:     "1",
 			setupCart:  false,
 			wantStatus: http.StatusOK,
 			wantBody:   `"id":"","user_id":1,"items":[]`,
@@ -124,22 +124,29 @@ func TestGetUserCart(t *testing.T) {
 		{
 			name:       "cart exists - returns cart with items",
 			method:     http.MethodGet,
-			body:       `{"user_id":1}`,
+			userID:     "1",
 			setupCart:  true,
 			wantStatus: http.StatusOK,
 			wantBody:   `"user_id":1,"items":[{"item_id":1`,
 		},
 		{
-			name:       "invalid request body",
+			name:       "missing user ID header",
 			method:     http.MethodGet,
-			body:       `invalid json`,
+			userID:     "",
+			setupCart:  false,
+			wantStatus: http.StatusBadRequest,
+		},
+		{
+			name:       "invalid user ID header",
+			method:     http.MethodGet,
+			userID:     "invalid",
 			setupCart:  false,
 			wantStatus: http.StatusBadRequest,
 		},
 		{
 			name:       "wrong method",
 			method:     http.MethodPost,
-			body:       `{"user_id":1}`,
+			userID:     "1",
 			setupCart:  false,
 			wantStatus: http.StatusMethodNotAllowed,
 		},
@@ -157,8 +164,10 @@ func TestGetUserCart(t *testing.T) {
 				h.CreateUserCartAndAddItems(createW, createReq)
 			}
 
-			req := httptest.NewRequest(tt.method, "/user/cart", strings.NewReader(tt.body))
-			req.Header.Set("Content-Type", "application/json")
+			req := httptest.NewRequest(tt.method, "/user/cart", nil)
+			if tt.userID != "" {
+				req.Header.Set("X-User-ID", tt.userID)
+			}
 			w := httptest.NewRecorder()
 
 			h.GetUserCart(w, req)

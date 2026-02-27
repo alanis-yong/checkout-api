@@ -224,17 +224,23 @@ func (h *Handler) GetUserCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req GetUserCartRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
+	userIDStr := r.Header.Get("X-User-ID")
+	if userIDStr == "" {
+		http.Error(w, "missing X-User-ID header", http.StatusBadRequest)
 		return
 	}
 
-	cart := h.store.GetUserCart(req.UserID)
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		http.Error(w, "invalid X-User-ID header", http.StatusBadRequest)
+		return
+	}
+
+	cart := h.store.GetUserCart(userID)
 	if cart == nil {
 		emptyCart := &models.Cart{
 			ID:     "",
-			UserID: req.UserID,
+			UserID: userID,
 			Items:  []models.LineItem{},
 		}
 		writeJSON(w, http.StatusOK, emptyCart)
