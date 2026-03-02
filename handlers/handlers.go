@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -13,7 +14,8 @@ import (
 
 // ItemStore defines the data operations the handler needs.
 type ItemStore interface {
-	GetItems() []*models.Item
+	GetItems(ctx context.Context) ([]*models.Item, error)
+	// TODO: refactor all methods to receive an extra context.Context as the first argument and return a second value of error type
 	GetItem(id int) *models.Item
 	CreateOrder(userID int, items []models.LineItem, total int, status string) *models.Order
 	CreateUserCart(cart *models.Cart)
@@ -337,8 +339,16 @@ func (h *Handler) GetItems(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	items := h.store.GetItems()
+	items, err := h.store.GetItems(r.Context())
+	if err != nil {
+		// return 500 to the client
+		writeJSON(w, http.StatusInternalServerError, nil)
+		return
+	}
+
+	// return  200 to client
 	writeJSON(w, http.StatusOK, items)
+	return
 }
 
 // GetItemByID handles GET /items/{id} — returns a single item.

@@ -10,7 +10,7 @@ import (
 )
 
 func TestGetItems(t *testing.T) {
-	s := store.NewStore()
+	s := store.NewInMemStore()
 	h := NewHandler(s)
 
 	tests := []struct {
@@ -50,7 +50,7 @@ func TestGetItems(t *testing.T) {
 }
 
 func TestGetItemByID(t *testing.T) {
-	s := store.NewStore()
+	s := store.NewInMemStore()
 	h := NewHandler(s)
 
 	tests := []struct {
@@ -154,7 +154,7 @@ func TestGetUserCart(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := store.NewStore()
+			s := store.NewInMemStore()
 			h := NewHandler(s)
 
 			if tt.setupCart {
@@ -220,7 +220,7 @@ func TestCreateOrder(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := store.NewStore()
+			s := store.NewInMemStore()
 			h := NewHandler(s)
 
 			req := httptest.NewRequest(tt.method, "/orders", strings.NewReader(tt.body))

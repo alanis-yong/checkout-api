@@ -1,17 +1,33 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
 
 	"checkout-api/handlers"
 	"checkout-api/store"
+
+	"github.com/jackc/pgx/v5"
 )
 
 func main() {
-	s := store.NewStore()
-	h := handlers.NewHandler(s)
+	ctx := context.Background()
+	conn, err := pgx.Connect(ctx, "postgresql://postgres:postgres@localhost:5432/postgres")
+	if err != nil {
+		panic(err)
+	}
+
+	err = conn.Ping(ctx)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("successfully connected to db")
+
+	// s := store.NewInMemStore()
+	postgresStore := store.NewPostgresStore(conn)
+	h := handlers.NewHandler(postgresStore)
 
 	http.HandleFunc("/user/cart/items/",
 		func(w http.ResponseWriter, r *http.Request) {
