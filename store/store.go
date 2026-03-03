@@ -8,6 +8,7 @@ import (
 type Store struct {
 	items       map[int]*models.Item
 	orders      map[int]*models.Order
+	carts       map[int]*models.Cart
 	nextOrderID int
 }
 
@@ -16,6 +17,7 @@ func NewStore() *Store {
 	s := &Store{
 		items:       make(map[int]*models.Item),
 		orders:      make(map[int]*models.Order),
+		carts:       make(map[int]*models.Cart),
 		nextOrderID: 1,
 	}
 
@@ -52,4 +54,51 @@ func (s *Store) CreateOrder(userID int, items []models.LineItem, total int, stat
 	s.orders[order.ID] = order
 	s.nextOrderID++
 	return order
+}
+
+func (s *Store) CreateUserCart(cart *models.Cart) {
+	s.carts[cart.UserID] = cart
+}
+
+func (s *Store) GetUserCart(userID int) *models.Cart {
+	var cart *models.Cart
+	if c, ok := s.carts[userID]; ok {
+		cart = c
+		return cart
+	}
+	return cart
+}
+
+func (s *Store) DeleteUserCart(userID int) {
+	delete(s.carts, userID)
+}
+
+func (s *Store) UpdateCartItem(userID int, itemID int, quantity int) bool {
+	cart := s.carts[userID]
+	if cart == nil {
+		return false
+	}
+
+	for i := range cart.Items {
+		if cart.Items[i].ItemID == itemID {
+			cart.Items[i].Quantity = quantity
+			return true
+		}
+	}
+	return false
+}
+
+func (s *Store) RemoveCartItem(userID int, itemID int) bool {
+	cart := s.carts[userID]
+	if cart == nil {
+		return false
+	}
+
+	for i, item := range cart.Items {
+		if item.ItemID == itemID {
+			cart.Items = append(cart.Items[:i], cart.Items[i+1:]...)
+			return true
+		}
+	}
+	return false
 }
