@@ -24,3 +24,9 @@ type Order struct {
 	Total  int        `json:"total"`
 	Status string     `json:"status"` // pending, paid, failed
 }
+
+type Cart struct {
+	ID     string     `json:"id"`
+	UserID int        `json:"user_id"`
+	Items  []LineItem `json:"items"`
+}
