@@ -14,6 +14,9 @@ import (
 
 func main() {
 	ctx := context.Background()
+	// Todo Bonus: this looks dangerous maybe you can save it in a .env file
+	// then add it to .gitignore so that your secrets are not pushed to the server
+	// try https://github.com/spf13/viper
 	conn, err := pgx.Connect(ctx, "postgresql://postgres:postgres@localhost:5432/postgres")
 	if err != nil {
 		panic(err)
@@ -44,6 +47,9 @@ func main() {
 	// users
 	http.HandleFunc("POST /signup", h.CreateUser)
 	http.HandleFunc("POST /login", h.LoginUser)
+
+	// TODO: implement Get RefreshToken
+	http.HandleFunc("GET /token", h.IssueJWT)
 
 	fmt.Println("Server starting on :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))

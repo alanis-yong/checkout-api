@@ -19,6 +19,9 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+// TODO Bonus: this looks dangerous maybe you can save it in a .env file
+// then add it to .gitignore so that your secrets are not pushed to the server
+// try https://github.com/spf13/viper
 var SigningSecret string = "5298365169"
 
 // ItemStore defines the data operations the handler needs.
@@ -70,6 +73,10 @@ func mockProcessPayment(amount int) PaymentResult {
 }
 
 func (h *Handler) UpsertCartItem(w http.ResponseWriter, r *http.Request) {
+	// TODO: this looks like it can be extracted as a commonly used
+	// Explore the middleware pattern in net/http and see if you can extract authentication logic
+	// into it's own handler(middleware)
+
 	// get authorization header
 	authorizationHeaderStr := r.Header.Get("Authorization")
 	if authorizationHeaderStr == "" {
@@ -77,7 +84,7 @@ func (h *Handler) UpsertCartItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// BeArER aksdfjl;a;lksjdf;jasdf
+	// BeArER xxxx.yyyy.zzzz
 	scheme := "bearer "
 	if len(authorizationHeaderStr) < len(scheme) {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
@@ -148,6 +155,7 @@ func (h *Handler) UpsertCartItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) RemoveCartItem(w http.ResponseWriter, r *http.Request) {
+	// TODO: Protect this method
 	userIDStr := r.Header.Get("X-User-ID")
 	if userIDStr == "" {
 		http.Error(w, "missing X-User-ID header", http.StatusBadRequest)
@@ -183,6 +191,7 @@ func (h *Handler) RemoveCartItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetUserCart(w http.ResponseWriter, r *http.Request) {
+	// TODO: protect this method
 	userIDStr := r.Header.Get("X-User-ID")
 	if userIDStr == "" {
 		http.Error(w, "missing X-User-ID header", http.StatusBadRequest)
@@ -201,14 +210,14 @@ func (h *Handler) GetUserCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if cart == nil {
-		cart = make([]models.Cart, 0)
-	}
-
+	// TODO: instead of returning Cart
+	// return CartResponse instead
+	// tip: refactor the GetUserCart method
 	writeJSON(w, http.StatusOK, cart)
 }
 
 func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
+	// TODO: protect this method
 	userIDStr := r.Header.Get("X-User-ID")
 	if userIDStr == "" {
 		http.Error(w, "missing X-User-ID header", http.StatusBadRequest)
@@ -343,7 +352,7 @@ func (h *Handler) GetItemByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
-	var req SignupLoginRequest
+	var req AuthRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		http.Error(w, "invalid body", http.StatusBadRequest)
@@ -384,7 +393,7 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) LoginUser(w http.ResponseWriter, r *http.Request) {
-	var req SignupLoginRequest
+	var req AuthRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		http.Error(w, "invalid body", http.StatusBadRequest)
@@ -425,14 +434,24 @@ func (h *Handler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// store session(refresh token)
+	// TODO: do it yourself
 	// generate a random string(bonus: if you use a CSPRNG to generate a random sequence of bytes)
 	// insert into refresh_tokens (token_value, is_active) values ("sOmERANdomlYGeNERATEDstRing", 1)
-	// TODO: do it yourself
 
 	writeJSON(w, http.StatusOK, AuthResponse{
 		JWT:          signedString,
 		RefreshToken: "sOmERANdomlYGeNERATEDstRing",
 	})
+}
+
+func (h *Handler) IssueJWT(w http.ResponseWriter, r *http.Request) {
+	// TODO: implement issueing of new JWT with refresh token
+	// check if refresh_token exists in the db and still active
+	// generate a new JWT
+	// generate a new random string (bonus: if you use a CSPRNG to generate a random sequence of bytes) as refresh_token
+	// save new refresh token in db
+	// deactivate old refresh token
+
 }
 
 // writeJSON encodes v as JSON and writes it to the response.

@@ -37,10 +37,18 @@ type OrderResponse struct {
 }
 
 type CartResponse struct {
-	ID       string `json:"id"`
-	UserID   int    `json:"user_id"`
-	ItemID   int    `json:"item_id"`
-	Quantity int    `json:"quantity"`
+	UserID int                `json:"user_id"`
+	Items  []CartItemResponse `json:"items"`
+}
+
+type CartItemResponse struct {
+	ID          int       `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Price       int       `json:"price"` // Price in cents
+	Stock       int       `json:"stock"`
+	CreatedAt   time.Time `json:"created_at"`
+	Quantity    int       `json:"quantity"`
 }
 
 type AuthResponse struct {

@@ -132,6 +132,10 @@ func (s *PostgresStore) UpsertCartItem(ctx context.Context, userID int, itemID i
 }
 
 func (s *PostgresStore) GetUserCart(ctx context.Context, userID int) ([]models.Cart, error) {
+	// TODO: returning a slice of models.Cart does not seem useful for our API
+	// return a slice of items that belong to the user instead
+	// use GetItemsFromUserCart(ctx context.Context, userID int) (pgx.Rows, error)
+
 	rows, err := s.DB().GetCartByUserID(ctx, userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get cart for user %d: %w", userID, err)
