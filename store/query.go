@@ -64,3 +64,10 @@ func (q *Query) DeleteItemFromUserCart(ctx context.Context, userID int, itemID i
 	return q.DBTX.Exec(ctx, "delete from carts where user_id = $1 and item_id = $2", userID, itemID)
 }
 
+func (q *Query) InsertUser(ctx context.Context, email string, hash []byte) (pgconn.CommandTag, error) {
+	return q.DBTX.Exec(ctx, "insert into users (email, hash) values ($1, $2)", email, hash)
+}
+
+func (q *Query) GetUserByEmail(ctx context.Context, email string) pgx.Row {
+	return q.DBTX.QueryRow(ctx, "select id, email, hash from users where email = $1", email)
+}

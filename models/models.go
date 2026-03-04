@@ -34,3 +34,9 @@ type Cart struct {
 	ItemID   int `json:"item_id"`
 	Quantity int `json:"quantity"`
 }
+
+type User struct {
+	ID    int    `json:"id"`
+	Email string `json:"email"`
+	Hash  []byte
+}

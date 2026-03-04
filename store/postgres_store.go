@@ -163,3 +163,19 @@ func (s *PostgresStore) RemoveCartItem(ctx context.Context, userID int, itemID i
 	_, err := s.DB().DeleteItemFromUserCart(ctx, userID, itemID)
 	return err
 }
+
+func (s *PostgresStore) SaveUser(ctx context.Context, email string, hash []byte) error {
+	_, err := s.DB().InsertUser(ctx, email, hash)
+	return err
+}
+
+func (s *PostgresStore) FindUserByEmail(ctx context.Context, email string) (models.User, error) {
+	var user models.User
+	row := s.DB().GetUserByEmail(ctx, email)
+	err := row.Scan(&user.ID, &user.Email, &user.Hash)
+	if err != nil {
+		return models.User{}, err
+	}
+
+	return user, nil
+}

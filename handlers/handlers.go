@@ -3,13 +3,23 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
+	"net/mail"
 	"strconv"
+	"strings"
 	"time"
 
 	"checkout-api/models"
+
+	"github.com/jackc/pgx/v5"
+	"golang.org/x/crypto/bcrypt"
+
+	"github.com/golang-jwt/jwt/v5"
 )
+
+var SigningSecret string = "5298365169"
 
 // ItemStore defines the data operations the handler needs.
 type ItemStore interface {
@@ -21,6 +31,8 @@ type ItemStore interface {
 	GetUserCart(ctx context.Context, userID int) ([]models.Cart, error)
 	DeleteUserCart(ctx context.Context, userID int) error
 	RemoveCartItem(ctx context.Context, userID int, itemID int) error
+	SaveUser(ctx context.Context, email string, hash []byte) error
+	FindUserByEmail(ctx context.Context, email string) (models.User, error)
 }
 
 // Handler holds dependencies for HTTP handlers.
@@ -58,17 +70,49 @@ func mockProcessPayment(amount int) PaymentResult {
 }
 
 func (h *Handler) UpsertCartItem(w http.ResponseWriter, r *http.Request) {
-	userIDStr := r.Header.Get("X-User-ID")
-	if userIDStr == "" {
-		http.Error(w, "missing X-User-ID header", http.StatusBadRequest)
+	// get authorization header
+	authorizationHeaderStr := r.Header.Get("Authorization")
+	if authorizationHeaderStr == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	userID, err := strconv.Atoi(userIDStr)
-	if err != nil {
-		http.Error(w, "invalid X-User-ID header", http.StatusBadRequest)
+	// BeArER aksdfjl;a;lksjdf;jasdf
+	scheme := "bearer "
+	if len(authorizationHeaderStr) < len(scheme) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
+	userScheme := authorizationHeaderStr[:len(scheme)] // BeArER
+	if !strings.EqualFold(scheme, userScheme) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	userJWT := authorizationHeaderStr[len(scheme):]
+	var claims jwt.RegisteredClaims
+	_, err := jwt.ParseWithClaims(
+		userJWT,
+		&claims,
+		func(t *jwt.Token) (any, error) {
+			return []byte(SigningSecret), nil
+		},
+		jwt.WithValidMethods([]string{"HS256"}),
+	)
+	if err != nil {
+		fmt.Printf("failed to parse jwt %q", err.Error())
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	userID, err := strconv.Atoi(claims.Subject)
+	if err != nil {
+		fmt.Printf("failed to parse jwt %q", err.Error())
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// user is now authenticated
 
 	itemIDStr := r.PathValue("item_id")
 	if itemIDStr == "" {
@@ -90,7 +134,7 @@ func (h *Handler) UpsertCartItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Quantity <= 0 {
+	if req.Quantity < 0 {
 		http.Error(w, "quantity must be greater than 0", http.StatusBadRequest)
 		return
 	}
@@ -296,6 +340,99 @@ func (h *Handler) GetItemByID(w http.ResponseWriter, r *http.Request) {
 
 	writeJSON(w, http.StatusOK, item)
 	return
+}
+
+func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
+	var req SignupLoginRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, "invalid body", http.StatusBadRequest)
+		return
+	}
+
+	// validate email
+	_, err = mail.ParseAddress(req.Email)
+	if err != nil {
+		writeJSON(w, http.StatusUnprocessableEntity, ErrorMessageResponse{
+			Message: "invalid email",
+		})
+		return
+	}
+
+	pwlen := len(req.Password)
+	// validate password
+	if pwlen < 12 || pwlen > 25 {
+		writeJSON(w, http.StatusUnprocessableEntity, ErrorMessageResponse{
+			Message: "password is too short or too long",
+		})
+		return
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	err = h.store.SaveUser(r.Context(), req.Email, hash)
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	writeJSON(w, http.StatusCreated, nil)
+}
+
+func (h *Handler) LoginUser(w http.ResponseWriter, r *http.Request) {
+	var req SignupLoginRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, "invalid body", http.StatusBadRequest)
+		return
+	}
+
+	user, err := h.store.FindUserByEmail(r.Context(), req.Email)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			writeJSON(w, http.StatusUnprocessableEntity, ErrorMessageResponse{
+				Message: "user does not exist",
+			})
+			return
+		}
+		fmt.Printf("cannot query %q", err.Error())
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	err = bcrypt.CompareHashAndPassword(user.Hash, []byte(req.Password))
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	// issue jwt
+	fifteenAfter := time.Now().Add(15 * time.Minute)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
+		ExpiresAt: jwt.NewNumericDate(fifteenAfter),
+		Subject:   strconv.Itoa(user.ID),
+		IssuedAt:  jwt.NewNumericDate(time.Now()),
+	})
+
+	signedString, err := token.SignedString([]byte(SigningSecret))
+	if err != nil {
+		fmt.Printf("cannot generate signed string %q", err.Error())
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	// store session(refresh token)
+	// generate a random string(bonus: if you use a CSPRNG to generate a random sequence of bytes)
+	// insert into refresh_tokens (token_value, is_active) values ("sOmERANdomlYGeNERATEDstRing", 1)
+	// TODO: do it yourself
+
+	writeJSON(w, http.StatusOK, AuthResponse{
+		JWT:          signedString,
+		RefreshToken: "sOmERANdomlYGeNERATEDstRing",
+	})
 }
 
 // writeJSON encodes v as JSON and writes it to the response.

@@ -17,3 +17,6 @@
 -- select i.description, oi.quantity from order_items as oi
 -- left join items as i
 -- on oi.item_id=i.id
+
+-- select * from users;
+

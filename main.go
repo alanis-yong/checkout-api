@@ -41,6 +41,10 @@ func main() {
 	http.HandleFunc("GET /items", h.GetItems)
 	http.HandleFunc("GET /items/{item_id}", h.GetItemByID)
 
+	// users
+	http.HandleFunc("POST /signup", h.CreateUser)
+	http.HandleFunc("POST /login", h.LoginUser)
+
 	fmt.Println("Server starting on :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
