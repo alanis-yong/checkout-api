@@ -29,32 +29,17 @@ func main() {
 	postgresStore := store.NewPostgresStore(conn)
 	h := handlers.NewHandler(postgresStore)
 
-	http.HandleFunc("/user/cart/items/",
-		func(w http.ResponseWriter, r *http.Request) {
-			switch r.Method {
-			case http.MethodPatch:
-				h.UpdateCartItem(w, r)
-			case http.MethodDelete:
-				h.RemoveCartItem(w, r)
-			default:
-				http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-			}
-		})
-	http.HandleFunc("/user/cart",
-		func(w http.ResponseWriter, r *http.Request) {
-			switch r.Method {
-			case http.MethodGet:
-				h.GetUserCart(w, r)
-			case http.MethodPost:
-				h.CreateUserCartAndAddItems(w, r)
-			default:
-				http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-			}
-		})
-	http.HandleFunc("/user/orders", h.CreateOrderFromCart)
+	// cart
+	http.HandleFunc("GET /user/cart", h.GetUserCart)
+	http.HandleFunc("PATCH /user/cart/items/{item_id}", h.UpsertCartItem)
+	http.HandleFunc("DELETE /user/cart/items/{item_id}", h.RemoveCartItem)
 
-	http.HandleFunc("/items", h.GetItems)
-	http.HandleFunc("/items/", h.GetItemByID)
+	// orders
+	http.HandleFunc("POST /orders", h.CreateOrder)
+
+	// items
+	http.HandleFunc("GET /items", h.GetItems)
+	http.HandleFunc("GET /items/{item_id}", h.GetItemByID)
 
 	fmt.Println("Server starting on :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))

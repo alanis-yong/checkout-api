@@ -23,13 +23,14 @@ type LineItem struct {
 type Order struct {
 	ID     int        `json:"id"`
 	UserID int        `json:"user_id"`
-	Items  []LineItem `json:"items"`
+	Items  []LineItem `json:"line_items"`
 	Total  int        `json:"total"`
 	Status string     `json:"status"` // pending, paid, failed
 }
 
+// Cart is a single cart row representing one item in a user's cart.
 type Cart struct {
-	ID     string     `json:"id"`
-	UserID int        `json:"user_id"`
-	Items  []LineItem `json:"items"`
+	UserID   int `json:"user_id"`
+	ItemID   int `json:"item_id"`
+	Quantity int `json:"quantity"`
 }
