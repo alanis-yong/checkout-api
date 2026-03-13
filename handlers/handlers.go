@@ -118,6 +118,7 @@ func (h *Handler) CreateUserCartAndAddItems(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	//cart already created?
 	if h.store.GetUserCart(req.UserID) != nil {
 		http.Error(w, "cart already exists", http.StatusConflict)
 		return
@@ -153,7 +154,18 @@ func (h *Handler) CreateUserCartAndAddItems(w http.ResponseWriter, r *http.Reque
 
 }
 
-func (h *Handler) UpdateCartItem(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) UpdateOrRemoveItemFromCart(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodPatch:
+		h.updateCartItem(w, r)
+	case http.MethodDelete:
+		h.removeCartItem(w, r)
+	default:
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func (h *Handler) updateCartItem(w http.ResponseWriter, r *http.Request) {
 	pathParts := strings.Split(r.URL.Path, "/")
 	if len(pathParts) < 5 {
 		http.Error(w, "invalid path", http.StatusBadRequest)
@@ -186,7 +198,7 @@ func (h *Handler) UpdateCartItem(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, cart)
 }
 
-func (h *Handler) RemoveCartItem(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) removeCartItem(w http.ResponseWriter, r *http.Request) {
 	pathParts := strings.Split(r.URL.Path, "/")
 	if len(pathParts) < 5 {
 		http.Error(w, "invalid path", http.StatusBadRequest)
@@ -224,23 +236,17 @@ func (h *Handler) GetUserCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userIDStr := r.Header.Get("X-User-ID")
-	if userIDStr == "" {
-		http.Error(w, "missing X-User-ID header", http.StatusBadRequest)
+	var req GetUserCartRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	userID, err := strconv.Atoi(userIDStr)
-	if err != nil {
-		http.Error(w, "invalid X-User-ID header", http.StatusBadRequest)
-		return
-	}
-
-	cart := h.store.GetUserCart(userID)
+	cart := h.store.GetUserCart(req.UserID)
 	if cart == nil {
 		emptyCart := &models.Cart{
 			ID:     "",
-			UserID: userID,
+			UserID: req.UserID,
 			Items:  []models.LineItem{},
 		}
 		writeJSON(w, http.StatusOK, emptyCart)

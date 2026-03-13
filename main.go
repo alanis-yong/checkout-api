@@ -13,28 +13,16 @@ func main() {
 	s := store.NewStore()
 	h := handlers.NewHandler(s)
 
-	http.HandleFunc("/user/cart/items/",
-		func(w http.ResponseWriter, r *http.Request) {
-			switch r.Method {
-			case http.MethodPatch:
-				h.UpdateCartItem(w, r)
-			case http.MethodDelete:
-				h.RemoveCartItem(w, r)
-			default:
-				http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-			}
-		})
-	http.HandleFunc("/user/cart",
-		func(w http.ResponseWriter, r *http.Request) {
-			switch r.Method {
-			case http.MethodGet:
-				h.GetUserCart(w, r)
-			case http.MethodPost:
-				h.CreateUserCartAndAddItems(w, r)
-			default:
-				http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-			}
-		})
+	http.HandleFunc("/user/cart/items/", h.UpdateOrRemoveItemFromCart)
+	http.HandleFunc("/user/cart", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			h.CreateUserCartAndAddItems(w, r)
+		} else if r.Method == http.MethodGet {
+			h.GetUserCart(w, r)
+		} else {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
 	http.HandleFunc("/user/orders", h.CreateOrderFromCart)
 
 	http.HandleFunc("/items", h.GetItems)
