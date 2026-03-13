@@ -1,0 +1,411 @@
+openapi: 3.0.3
+info:
+  title: Checkout API
+  version: 1.0.0
+  description: A checkout API supporting items, cart management, orders, and user authentication.
+
+servers:
+  - url: http://localhost:8080
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ErrorMessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+    Item:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: integer
+          description: Price in cents
+        stock:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    LineItemRequest:
+      type: object
+      required: [item_id, quantity, price]
+      properties:
+        item_id:
+          type: integer
+        quantity:
+          type: integer
+        price:
+          type: integer
+          description: Price in cents
+
+    LineItemResponse:
+      type: object
+      properties:
+        item_id:
+          type: integer
+        quantity:
+          type: integer
+        price:
+          type: integer
+          description: Price at time of adding (in cents)
+
+    OrderResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        line_items:
+          type: array
+          items:
+            $ref: "#/components/schemas/LineItemResponse"
+        total:
+          type: integer
+          description: Total in cents
+        status:
+          type: string
+          enum: [pending, paid, failed]
+
+    PaymentResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        transaction_id:
+          type: string
+        error:
+          type: string
+
+    CartItemResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: integer
+          description: Price in cents
+        stock:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        quantity:
+          type: integer
+
+    CartResponse:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CartItemResponse"
+
+    AuthRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 12
+          maxLength: 25
+
+    AuthResponse:
+      type: object
+      properties:
+        jwt:
+          type: string
+        refresh_token:
+          type: string
+
+paths:
+  /items:
+    get:
+      summary: List all items
+      operationId: getItems
+      tags: [Items]
+      responses:
+        "200":
+          description: List of available items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Item"
+        "500":
+          description: Internal server error
+
+  /items/{item_id}:
+    get:
+      summary: Get item by ID
+      operationId: getItemByID
+      tags: [Items]
+      parameters:
+        - name: item_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Item found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Item"
+        "404":
+          description: Item not found
+        "422":
+          description: item_id must be an integer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageResponse"
+        "500":
+          description: Internal server error
+
+  /user/cart:
+    get:
+      summary: Get the authenticated user's cart
+      operationId: getUserCart
+      tags: [Cart]
+      parameters:
+        - name: X-User-ID
+          in: header
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User cart
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CartResponse"
+        "400":
+          description: Missing or invalid X-User-ID header
+        "500":
+          description: Internal server error
+
+  /user/cart/items/{item_id}:
+    patch:
+      summary: Add or update an item in the cart
+      operationId: upsertCartItem
+      tags: [Cart]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: item_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [quantity]
+              properties:
+                quantity:
+                  type: integer
+                  minimum: 0
+      responses:
+        "204":
+          description: Cart updated
+        "400":
+          description: Bad request (missing item_id or invalid body)
+        "401":
+          description: Unauthorized (missing or invalid JWT)
+        "422":
+          description: item_id must be integer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageResponse"
+        "500":
+          description: Internal server error
+
+    delete:
+      summary: Remove an item from the cart
+      operationId: removeCartItem
+      tags: [Cart]
+      parameters:
+        - name: item_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: X-User-ID
+          in: header
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Item removed
+        "400":
+          description: Bad request (missing item_id or X-User-ID)
+        "422":
+          description: item_id must be integer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageResponse"
+        "500":
+          description: Internal server error
+
+  /orders:
+    post:
+      summary: Create an order and process payment
+      operationId: createOrder
+      tags: [Orders]
+      parameters:
+        - name: X-User-ID
+          in: header
+          required: true
+          schema:
+            type: integer
+        - name: Idempotency-Key
+          in: header
+          required: true
+          description: Unique key to prevent duplicate orders (cached for 24 hours)
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [line_items, total]
+              properties:
+                line_items:
+                  type: array
+                  minItems: 1
+                  items:
+                    $ref: "#/components/schemas/LineItemRequest"
+                total:
+                  type: integer
+                  description: Total amount in cents
+      responses:
+        "201":
+          description: Order created and payment succeeded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  order:
+                    $ref: "#/components/schemas/OrderResponse"
+                  payment:
+                    $ref: "#/components/schemas/PaymentResult"
+        "402":
+          description: Order created but payment failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  order:
+                    $ref: "#/components/schemas/OrderResponse"
+                  payment:
+                    $ref: "#/components/schemas/PaymentResult"
+        "400":
+          description: Bad request (missing headers or empty line_items)
+        "500":
+          description: Internal server error
+
+  /signup:
+    post:
+      summary: Register a new user
+      operationId: createUser
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthRequest"
+      responses:
+        "201":
+          description: User created successfully
+        "400":
+          description: Invalid request body
+        "422":
+          description: Validation error (invalid email or password length)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageResponse"
+        "500":
+          description: Internal server error
+
+  /login:
+    post:
+      summary: Login and receive JWT
+      operationId: loginUser
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Invalid request body
+        "401":
+          description: Wrong password
+        "422":
+          description: User does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageResponse"
+        "500":
+          description: Internal server error
+
+  /token:
+    get:
+      summary: Issue a new JWT using a refresh token
+      operationId: issueJWT
+      tags: [Auth]
+      description: Not yet implemented.
+      responses:
+        "200":
+          description: New JWT issued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
