@@ -28,6 +28,7 @@ func (q *Query) GetItemByID(ctx context.Context, id int) pgx.Row {
 func (q *Query) GetItemsFromUserCart(ctx context.Context, userID int) (pgx.Rows, error) {
 	// TODO: implement bulk select of items that matches a list of ids
 	// tip: use ANY($1) and INNER JOIN or LEFT JOIN
+	return nil, nil
 }
 
 func (q *Query) GetItemByIDForUpdate(ctx context.Context, id int) pgx.Row {
