@@ -1,0 +1,17 @@
+# Production image for CI/CD pipeline.
+# The binary is compiled by the build_artifact job before docker build runs —
+# no Go toolchain needed here, which keeps the image small and the build fast.
+#
+# For local development use docker compose — it builds with the multi-stage Dockerfile.
+
+FROM alpine:3.21
+
+RUN apk add --no-cache ca-certificates
+
+WORKDIR /app
+
+COPY dist/checkout-api .
+
+EXPOSE 8080
+
+CMD ["/app/checkout-api"]

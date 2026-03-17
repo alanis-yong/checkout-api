@@ -56,6 +56,11 @@ func main() {
 	// TODO: implement Get RefreshToken
 	http.HandleFunc("GET /token", h.IssueJWT)
 
+	// health
+	http.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+
 	fmt.Println("Server starting on :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

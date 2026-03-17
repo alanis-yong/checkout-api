@@ -1,0 +1,69 @@
+stages:
+  - build   # lint + build_artifact run in parallel; build_image waits via needs
+  - test    # run_tests
+  # deploy stage will be added in the next lecture
+
+# $CI_REGISTRY_IMAGE — GitLab built-in: registry URL for this repo
+# $CI_COMMIT_SHA    — GitLab built-in: full commit hash
+# Every push produces a unique, traceable image tag — never overwrite "latest"
+variables:
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+
+# ── build stage ───────────────────────────────────────────────────────────────
+# Three jobs, one stage.
+# lint and build_artifact start immediately in parallel.
+# build_image waits for build_artifact via `needs` — same stage, correct order.
+
+lint:
+  stage: build
+  image: golang:1.24-alpine
+  variables:
+    DOCKER_HOST: ""
+  script:
+    - go vet ./...
+
+build_artifact:
+  stage: build
+  image: golang:1.24-alpine
+  variables:
+    DOCKER_HOST: ""
+  script:
+    - go mod download                                           # cache modules as a separate layer
+    - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o dist/checkout-api .
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 hour
+
+build_image:
+  stage: build
+  image: docker:27
+  services:
+    - docker:27-dind
+  variables:
+    # Disable TLS — DinD listens on plain TCP 2375.
+    # Avoids the cert-generation race where the daemon restarts mid-connection.
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: tcp://docker:2375
+  # `needs` with artifacts: true is the modern form of `dependencies` (slide 62).
+  # It controls both execution order and artifact download in one declaration.
+  needs:
+    - job: build_artifact
+      artifacts: true
+  before_script:
+    - until docker info; do sleep 1; done
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+  script:
+    - docker build -f Dockerfile.ci -t $IMAGE_TAG .
+    - docker push $IMAGE_TAG
+
+# ── test stage ────────────────────────────────────────────────────────────────
+
+run_tests:
+  stage: test
+  image: golang:1.24-alpine
+  variables:
+    DOCKER_HOST: ""
+  # No `dependencies` — go test compiles from source, dist/ artifact not needed.
+  script:
+    - go test ./...
