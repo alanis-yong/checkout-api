@@ -46,7 +46,7 @@ func (s *PostgresStore) GetItems(ctx context.Context) ([]*models.Item, error) {
 		var item models.Item
 		err := rows.Scan(&item.ID, &item.Name, &item.Description, &item.Price, &item.Stock, &item.CreatedAt)
 		if err != nil {
-			fmt.Printf("unable to scan row: %w", err)
+			fmt.Printf("unable to scan row: %v", err)
 			return nil, fmt.Errorf("unable to scan row: %w", err)
 		}
 		items = append(items, &item)

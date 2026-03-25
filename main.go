@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"checkout-api/handlers"
 	"checkout-api/store"
@@ -17,7 +18,11 @@ func main() {
 	// Todo Bonus: this looks dangerous maybe you can save it in a .env file
 	// then add it to .gitignore so that your secrets are not pushed to the server
 	// try https://github.com/spf13/viper
-	conn, err := pgx.Connect(ctx, "postgresql://postgres:postgres@localhost:5432/postgres")
+	dsn := os.Getenv("DATABASE_URL")
+	if dsn == "" {
+		dsn = "postgresql://postgres:postgres@localhost:5432/postgres"
+	}
+	conn, err := pgx.Connect(ctx, dsn)
 	if err != nil {
 		panic(err)
 	}
@@ -50,6 +55,11 @@ func main() {
 
 	// TODO: implement Get RefreshToken
 	http.HandleFunc("GET /token", h.IssueJWT)
+
+	// health
+	http.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
 
 	fmt.Println("Server starting on :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
