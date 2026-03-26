@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: checkout-api-ingress
+  namespace: checkout
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+spec:
+  rules:
+    # - host: your-domain.com  # uncomment and set when you have a domain
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: checkout-api-service
+                port:
+                  number: 80

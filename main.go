@@ -2,10 +2,12 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"checkout-api/handlers"
 	"checkout-api/store"
@@ -58,7 +60,17 @@ func main() {
 
 	// health
 	http.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
+		dbStatus := "ok"
+		if err := conn.Ping(r.Context()); err != nil {
+			dbStatus = "unreachable"
+		}
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(map[string]string{
+			"status":    "ok",
+			"database":  dbStatus,
+			"timestamp": time.Now().UTC().Format(time.RFC3339),
+		})
 	})
 
 	fmt.Println("Server starting on :8080")
