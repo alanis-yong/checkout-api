@@ -6,9 +6,52 @@ Students build this service incrementally across lectures, starting from a basic
 
 ## Prerequisites
 
+### Tools
+
 - Go 1.21+
+- Docker (for running Postgres locally)
+- `golang-migrate` CLI for running migrations:
+  ```bash
+  brew install golang-migrate
+  ```
+- `swag` CLI for generating OpenAPI docs:
+  ```bash
+  go install github.com/swaggo/swag/cmd/swag@latest
+  ```
 - curl or Postman (for testing endpoints)
 - A code editor (VS Code, GoLand, etc.)
+
+### Starting Postgres and applying migrations
+
+```bash
+# Start Postgres
+docker run -d --name checkout-postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -p 5432:5432 postgres:16
+
+# Apply migrations
+migrate -path ./migrations \
+  -database "postgresql://postgres:postgres@localhost:5432/postgres?sslmode=disable" up
+```
+
+### Go dependencies
+
+All dependencies are managed via `go.mod`. Run once after cloning:
+
+```bash
+go mod download
+```
+
+Key packages used in this lecture:
+
+| Package | Purpose |
+|---|---|
+| `github.com/jackc/pgx/v5` | PostgreSQL driver |
+| `github.com/golang-jwt/jwt/v5` | JWT signing and parsing |
+| `golang.org/x/crypto` | bcrypt password hashing |
+| `github.com/go-playground/validator/v10` | Struct tag validation |
+| `github.com/swaggo/swag` | OpenAPI spec generation from annotations |
+| `github.com/swaggo/http-swagger` | Swagger UI handler |
 
 ## Quick Start
 
@@ -57,6 +100,8 @@ Each lecture has two branches:
 
 - `week-01/lecture-01` — Intro to HTTP and JSON APIs (starter)
 - `week-01/lecture-01-final` — Intro to HTTP and JSON APIs (completed)
+- `week-07/lecture-02` — Clean API Design & DDD (starter) ← **you are here**
+- `week-07/lecture-02-final` — Clean API Design & DDD (completed)
 
 ## Project Structure (Week 1)
 
