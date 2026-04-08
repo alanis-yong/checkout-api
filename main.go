@@ -13,6 +13,7 @@ import (
 	"checkout-api/store"
 
 	"github.com/jackc/pgx/v5"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func main() {
@@ -72,6 +73,12 @@ func main() {
 			"timestamp": time.Now().UTC().Format(time.RFC3339),
 		})
 	})
+	// @title Checkout API
+	// @version 1.0
+	// @description This is the backend for Alanis' Store.
+	// @host localhost:8080
+	// @BasePath /
+	http.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)
 
 	fmt.Println("Server starting on :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))

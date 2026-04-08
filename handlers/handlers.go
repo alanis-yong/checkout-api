@@ -190,6 +190,14 @@ func (h *Handler) RemoveCartItem(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// @Summary User Cart
+// @Description Users cart Object, User identification is by http header X-User-ID
+// @Tags Cart
+// @Produce json
+// @Success 200 {object} models.Cart
+// @Failure 400 {object} APIError
+// @Router /user/cart [get]
+
 func (h *Handler) GetUserCart(w http.ResponseWriter, r *http.Request) {
 	// TODO: protect this method
 	userIDStr := r.Header.Get("X-User-ID")
