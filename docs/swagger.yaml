@@ -1,9 +1,249 @@
 basePath: /
+definitions:
+  handlers.APIError:
+    properties:
+      details:
+        items:
+          $ref: '#/definitions/handlers.FieldError'
+        type: array
+      error:
+        type: string
+      message:
+        type: string
+      trace_id:
+        type: string
+    type: object
+  handlers.AuthRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  handlers.AuthResponse:
+    properties:
+      jwt:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  handlers.CreateOrderRequest:
+    properties:
+      line_items:
+        items:
+          $ref: '#/definitions/handlers.LineItemRequest'
+        type: array
+      total:
+        type: integer
+    type: object
+  handlers.ErrorMessageResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  handlers.FieldError:
+    properties:
+      field:
+        type: string
+      message:
+        type: string
+    type: object
+  handlers.LineItemRequest:
+    properties:
+      item_id:
+        type: integer
+      price:
+        type: integer
+      quantity:
+        type: integer
+    type: object
+  handlers.UpsertCartItemRequest:
+    properties:
+      quantity:
+        type: integer
+    required:
+    - quantity
+    type: object
+  models.Cart:
+    properties:
+      item_id:
+        type: integer
+      quantity:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  models.Item:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      price:
+        description: Price in cents
+        type: integer
+      stock:
+        type: integer
+    type: object
+  models.LineItem:
+    properties:
+      item_id:
+        type: integer
+      price:
+        description: Price at time of adding
+        type: integer
+      quantity:
+        type: integer
+    type: object
+  models.Order:
+    properties:
+      id:
+        type: integer
+      line_items:
+        items:
+          $ref: '#/definitions/models.LineItem'
+        type: array
+      status:
+        description: pending, paid, failed
+        type: string
+      total:
+        type: integer
+      user_id:
+        type: integer
+    type: object
 host: localhost:8080
 info:
   contact: {}
   description: This is the backend for Alanis' Store.
   title: Checkout API
   version: "1.0"
-paths: {}
+paths:
+  /cart/{item_id}:
+    put:
+      consumes:
+      - application/json
+      description: Adds an item to the user's cart or updates the quantity if it exists
+      parameters:
+      - description: Item ID
+        in: path
+        name: item_id
+        required: true
+        type: integer
+      - description: Quantity
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpsertCartItemRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorMessageResponse'
+      security:
+      - Bearer: []
+      summary: Add or Update Cart Item
+      tags:
+      - Cart
+  /items:
+    get:
+      description: Get a list of all products in the store
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Item'
+            type: array
+      summary: Get all items
+      tags:
+      - Items
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and return JWT
+      parameters:
+      - description: Credentials
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.AuthRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.AuthResponse'
+        "401":
+          description: Unauthorized
+      summary: Login
+      tags:
+      - Auth
+  /orders:
+    post:
+      consumes:
+      - application/json
+      description: Converts cart items into a permanent order
+      parameters:
+      - description: Idempotency Key
+        in: header
+        name: Idempotency-Key
+        required: true
+        type: string
+      - description: Order Details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Order'
+        "402":
+          description: Payment Required
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create Order
+      tags:
+      - Orders
+  /user/cart:
+    get:
+      description: Users cart Object, User identification is by http header X-User-ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Cart'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.APIError'
+      summary: User Cart
+      tags:
+      - Cart
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

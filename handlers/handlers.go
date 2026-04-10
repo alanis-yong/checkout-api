@@ -11,13 +11,17 @@ import (
 	"strings"
 	"time"
 
+	"checkout-api/internal/cart"
 	"checkout-api/models"
 
 	"github.com/jackc/pgx/v5"
 	"golang.org/x/crypto/bcrypt"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
 )
+
+var validate = validator.New()
 
 // TODO Bonus: this looks dangerous maybe you can save it in a .env file
 // then add it to .gitignore so that your secrets are not pushed to the server
@@ -30,12 +34,13 @@ type ItemStore interface {
 	GetItem(ctx context.Context, id int) (*models.Item, error)
 	CreateOrder(ctx context.Context, userID int, items []models.LineItem, total int, status string) (*models.Order, error)
 	UpdateOrderStatus(ctx context.Context, orderID int, status string) error
-	UpsertCartItem(ctx context.Context, userID int, itemID int, quantity int) error
-	GetUserCart(ctx context.Context, userID int) ([]models.Cart, error)
 	DeleteUserCart(ctx context.Context, userID int) error
-	RemoveCartItem(ctx context.Context, userID int, itemID int) error
 	SaveUser(ctx context.Context, email string, hash []byte) error
 	FindUserByEmail(ctx context.Context, email string) (models.User, error)
+	GetUserCart(ctx context.Context, userID int) (*cart.Cart, error)
+	SaveCart(ctx context.Context, c *cart.Cart) error
+	GetUserOrders(ctx context.Context, userID int, cursor int, limit int) ([]models.Order, error)
+	RemoveCartItem(ctx context.Context, userID int, itemID int) error
 }
 
 // Handler holds dependencies for HTTP handlers.
@@ -58,6 +63,11 @@ type IdempotencyRecord struct {
 	Expiry     time.Time
 }
 
+type OrdersResponse struct {
+	Orders     []OrderResponse `json:"orders"`
+	NextCursor string          `json:"next_cursor,omitempty"`
+}
+
 // mockProcessPayment simulates a payment provider call.
 func mockProcessPayment(amount int) PaymentResult {
 	if amount > 0 && amount < 1000000 {
@@ -72,6 +82,17 @@ func mockProcessPayment(amount int) PaymentResult {
 	}
 }
 
+// @Summary Add or Update Cart Item
+// @Description Adds an item to the user's cart or updates the quantity if it exists
+// @Tags Cart
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param item_id path int true "Item ID"
+// @Param body body UpsertCartItemRequest true "Quantity"
+// @Success 204 "No Content"
+// @Failure 400 {object} ErrorMessageResponse
+// @Router /cart/{item_id} [put]
 func (h *Handler) UpsertCartItem(w http.ResponseWriter, r *http.Request) {
 	// TODO: this looks like it can be extracted as a commonly used
 	// Explore the middleware pattern in net/http and see if you can extract authentication logic
@@ -122,16 +143,9 @@ func (h *Handler) UpsertCartItem(w http.ResponseWriter, r *http.Request) {
 	// user is now authenticated
 
 	itemIDStr := r.PathValue("item_id")
-	if itemIDStr == "" {
-		http.Error(w, "missing item_id", http.StatusBadRequest)
-		return
-	}
-
 	itemID, err := strconv.Atoi(itemIDStr)
 	if err != nil {
-		writeJSON(w, http.StatusUnprocessableEntity, ErrorMessageResponse{
-			Message: "item_id must be integer",
-		})
+		writeJSON(w, http.StatusUnprocessableEntity, ErrorMessageResponse{Message: "item_id must be integer"})
 		return
 	}
 
@@ -141,13 +155,32 @@ func (h *Handler) UpsertCartItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Quantity < 0 {
-		http.Error(w, "quantity must be greater than 0", http.StatusBadRequest)
+	if err := validate.Struct(req); err != nil {
+		writeJSON(w, http.StatusBadRequest, ErrorMessageResponse{
+			Message: "Validation failed: quantity must be greater than 0",
+		})
 		return
 	}
 
-	if err := h.store.UpsertCartItem(r.Context(), userID, itemID, req.Quantity); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	item, err := h.store.GetItem(r.Context(), itemID)
+	if err != nil || item == nil {
+		http.Error(w, "item not found", http.StatusNotFound)
+		return
+	}
+
+	c, err := h.store.GetUserCart(r.Context(), userID)
+	if err != nil {
+		c = cart.New(userID)
+	}
+
+	if err := c.AddItem(itemID, req.Quantity, item.Price); err != nil {
+		writeJSON(w, http.StatusBadRequest, ErrorMessageResponse{Message: err.Error()})
+		return
+	}
+
+	// 5. PERSIST: Save the whole Aggregate back
+	if err := h.store.SaveCart(r.Context(), c); err != nil {
+		http.Error(w, "failed to save cart", http.StatusInternalServerError)
 		return
 	}
 
@@ -197,7 +230,6 @@ func (h *Handler) RemoveCartItem(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Cart
 // @Failure 400 {object} APIError
 // @Router /user/cart [get]
-
 func (h *Handler) GetUserCart(w http.ResponseWriter, r *http.Request) {
 	// TODO: protect this method
 	userIDStr := r.Header.Get("X-User-ID")
@@ -224,6 +256,16 @@ func (h *Handler) GetUserCart(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, cart)
 }
 
+// @Summary Create Order
+// @Description Converts cart items into a permanent order
+// @Tags Orders
+// @Accept json
+// @Produce json
+// @Param Idempotency-Key header string true "Idempotency Key"
+// @Param body body CreateOrderRequest true "Order Details"
+// @Success 201 {object} models.Order
+// @Failure 402 {object} map[string]interface{} "Payment Required"
+// @Router /orders [post]
 func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	// TODO: protect this method
 	userIDStr := r.Header.Get("X-User-ID")
@@ -315,7 +357,12 @@ func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	w.Write(responseBody)
 }
 
-// GetItems handles GET /items — returns all available items.
+// @Summary Get all items
+// @Description Get a list of all products in the store
+// @Tags Items
+// @Produce json
+// @Success 200 {array} models.Item
+// @Router /items [get]
 func (h *Handler) GetItems(w http.ResponseWriter, r *http.Request) {
 	items, err := h.store.GetItems(r.Context())
 	if err != nil {
@@ -400,6 +447,15 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusCreated, nil)
 }
 
+// @Summary Login
+// @Description Authenticate user and return JWT
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param body body AuthRequest true "Credentials"
+// @Success 200 {object} AuthResponse
+// @Failure 401 "Unauthorized"
+// @Router /login [post]
 func (h *Handler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	var req AuthRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
@@ -467,4 +523,64 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(v)
+}
+
+func (h *Handler) GetUserOrders(w http.ResponseWriter, r *http.Request) {
+	// 1. Get userID from path
+	userIDStr := r.PathValue("id")
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		http.Error(w, "invalid user id", http.StatusBadRequest)
+		return
+	}
+
+	// 2. Parse pagination parameters from Query String (?limit=10&cursor=50)
+	limitStr := r.URL.Query().Get("limit")
+	cursorStr := r.URL.Query().Get("cursor")
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit <= 0 {
+		limit = 10 // Default page size
+	}
+
+	// If cursor is empty (first page), we use 0 or a very large number
+	// depending on if you sort ASC or DESC.
+	cursor, _ := strconv.Atoi(cursorStr)
+
+	// 3. Fetch data from the Store
+	orders, err := h.store.GetUserOrders(r.Context(), userID, cursor, limit)
+	if err != nil {
+		http.Error(w, "failed to fetch orders", http.StatusInternalServerError)
+		return
+	}
+
+	// 4. Determine the "Next Cursor"
+	// If we got items back, the cursor for the NEXT page is the ID of the LAST item.
+	var nextCursor string
+	if len(orders) > 0 {
+		lastOrder := orders[len(orders)-1]
+		nextCursor = strconv.Itoa(lastOrder.ID)
+	}
+
+	// 5. Build the Response
+	// (Assuming you have a helper to map models.Order to OrderResponse)
+	resp := OrdersResponse{
+		Orders:     mapOrdersToResponse(orders),
+		NextCursor: nextCursor,
+	}
+
+	writeJSON(w, http.StatusOK, resp)
+}
+
+func mapOrdersToResponse(orders []models.Order) []OrderResponse {
+	out := make([]OrderResponse, 0, len(orders))
+	for _, o := range orders {
+		out = append(out, OrderResponse{
+			ID:     o.ID,
+			UserID: o.UserID,
+			Total:  o.Total,
+			Status: o.Status,
+		})
+	}
+	return out
 }

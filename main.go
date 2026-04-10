@@ -18,6 +18,15 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
+// @title Checkout API
+// @version 1.0
+// @description This is a sample checkout server for Alanis' Store.
+// @host localhost:8080
+// @BasePath /
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
+
 func main() {
 	ctx := context.Background()
 	// Todo Bonus: this looks dangerous maybe you can save it in a .env file

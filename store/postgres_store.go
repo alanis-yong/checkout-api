@@ -1,6 +1,7 @@
 package store
 
 import (
+	"checkout-api/internal/cart"
 	"checkout-api/models"
 	"context"
 	"errors"
@@ -131,8 +132,7 @@ func (s *PostgresStore) UpsertCartItem(ctx context.Context, userID int, itemID i
 	return err
 }
 
-func (s *PostgresStore) GetUserCart(ctx context.Context, userID int) ([]models.Cart, error) {
-	// TODO: returning a slice of models.Cart does not seem useful for our API
+func (s *PostgresStore) GetUserCart(ctx context.Context, userID int) (*cart.Cart, error) { // TODO: returning a slice of models.Cart does not seem useful for our API
 	// return a slice of items that belong to the user instead
 	// use GetItemsFromUserCart(ctx context.Context, userID int) (pgx.Rows, error)
 
@@ -155,7 +155,7 @@ func (s *PostgresStore) GetUserCart(ctx context.Context, userID int) ([]models.C
 		return nil, rows.Err()
 	}
 
-	return items, nil
+	return cart.New(userID), nil
 }
 
 func (s *PostgresStore) DeleteUserCart(ctx context.Context, userID int) error {
@@ -182,4 +182,45 @@ func (s *PostgresStore) FindUserByEmail(ctx context.Context, email string) (mode
 	}
 
 	return user, nil
+}
+
+func (s *PostgresStore) GetUserOrders(ctx context.Context, userID int, cursor int, limit int) ([]models.Order, error) {
+	var rows pgx.Rows
+	var err error
+
+	if cursor == 0 {
+		rows, err = s.DB().GetOrdersByUserIDFirstPage(ctx, userID, limit)
+	} else {
+		rows, err = s.DB().GetOrdersByUserIDWithCursor(ctx, userID, cursor, limit)
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to select orders: %w", err)
+	}
+	defer rows.Close()
+
+	orders := make([]models.Order, 0, limit)
+	for rows.Next() {
+		var o models.Order
+		// Scanning into the fields present in your models.Order
+		// Order: ID, UserID, Total, Status
+		err := rows.Scan(&o.ID, &o.UserID, &o.Total, &o.Status)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan order row: %w", err)
+		}
+
+		// Initialize empty slice so JSON returns [] instead of null
+		o.Items = []models.LineItem{}
+
+		orders = append(orders, o)
+	}
+
+	return orders, nil
+}
+
+func (s *PostgresStore) SaveCart(ctx context.Context, c *cart.Cart) error {
+	// TODO: Implement the SQL logic to UPSERT cart items into the database
+	// For now, we return nil so the code compiles and you can see your Swagger UI
+	fmt.Printf("Saving cart for user %d with %d items\n", c.UserID, len(c.Items()))
+	return nil
 }

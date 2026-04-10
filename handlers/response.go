@@ -29,11 +29,12 @@ type LinteItemResponse struct {
 }
 
 type OrderResponse struct {
-	ID     int                 `json:"id"`
-	UserID int                 `json:"user_id"`
-	Items  []LinteItemResponse `json:"line_items"`
-	Total  int                 `json:"total"`
-	Status string              `json:"status"` // pending, paid, failed
+	ID        int                 `json:"id"`
+	UserID    int                 `json:"user_id"`
+	Items     []LinteItemResponse `json:"line_items"`
+	Total     int                 `json:"total"`
+	Status    string              `json:"status"` // pending, paid, failed
+	CreatedAt time.Time           `json:"created_at"`
 }
 
 type CartResponse struct {

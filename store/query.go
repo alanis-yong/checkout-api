@@ -77,3 +77,16 @@ func (q *Query) InsertUser(ctx context.Context, email string, hash []byte) (pgco
 func (q *Query) GetUserByEmail(ctx context.Context, email string) pgx.Row {
 	return q.DBTX.QueryRow(ctx, "select id, email, hash from users where email = $1", email)
 }
+
+func (q *Query) GetOrdersByUserIDFirstPage(ctx context.Context, userID int, limit int) (pgx.Rows, error) {
+	// Matching your models.Order: id, user_id, total, status
+	return q.DBTX.Query(ctx,
+		"SELECT id, user_id, total, status FROM orders WHERE user_id = $1 ORDER BY id DESC LIMIT $2",
+		userID, limit)
+}
+
+func (q *Query) GetOrdersByUserIDWithCursor(ctx context.Context, userID int, cursor int, limit int) (pgx.Rows, error) {
+	return q.DBTX.Query(ctx,
+		"SELECT id, user_id, total, status FROM orders WHERE user_id = $1 AND id < $2 ORDER BY id DESC LIMIT $3",
+		userID, cursor, limit)
+}
