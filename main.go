@@ -12,6 +12,8 @@ import (
 	"checkout-api/handlers"
 	"checkout-api/store"
 
+	_ "checkout-api/docs"
+
 	"github.com/jackc/pgx/v5"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -78,7 +80,7 @@ func main() {
 	// @description This is the backend for Alanis' Store.
 	// @host localhost:8080
 	// @BasePath /
-	http.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)
+	http.HandleFunc("GET /swagger/{any...}", httpSwagger.WrapHandler)
 
 	fmt.Println("Server starting on :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
