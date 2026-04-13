@@ -15,55 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/cart/{item_id}": {
-            "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Adds an item to the user's cart or updates the quantity if it exists",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Cart"
-                ],
-                "summary": "Add or Update Cart Item",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Item ID",
-                        "name": "item_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Quantity",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handlers.UpsertCartItemRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorMessageResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/items": {
             "get": {
                 "description": "Get a list of all products in the store",
@@ -126,7 +77,7 @@ const docTemplate = `{
         },
         "/orders": {
             "post": {
-                "description": "Converts cart items into a permanent order",
+                "description": "Converts cart items into a permanent order. Returns 402 if mock payment fails.",
                 "consumes": [
                     "application/json"
                 ],
@@ -157,16 +108,28 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/models.Order"
-                        }
-                    },
-                    "402": {
-                        "description": "Payment Required",
+                        "description": "Order Created Successfully",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorMessageResponse"
+                        }
+                    },
+                    "402": {
+                        "description": "Payment Failed",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorMessageResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorMessageResponse"
                         }
                     }
                 }
@@ -174,14 +137,19 @@ const docTemplate = `{
         },
         "/user/cart": {
             "get": {
-                "description": "Users cart Object, User identification is by http header X-User-ID",
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Fetches the cart for the currently authenticated user.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Cart"
                 ],
-                "summary": "User Cart",
+                "summary": "Get User Cart",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -189,10 +157,106 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.Cart"
                         }
                     },
+                    "404": {
+                        "description": "Cart not found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/cart/items/{item_id}": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Adds an item to the user's cart or updates the quantity",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Add or Update Cart Item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "item_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Quantity",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.UpsertCartItemRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handlers.APIError"
+                            "$ref": "#/definitions/handlers.ErrorMessageResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/orders": {
+            "get": {
+                "description": "Get a list of orders for a specific user with cursor pagination",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Get user orders",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Cursor",
+                        "name": "cursor",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.OrdersResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorMessageResponse"
                         }
                     }
                 }
@@ -289,6 +353,62 @@ const docTemplate = `{
                 }
             }
         },
+        "handlers.LinteItemResponse": {
+            "type": "object",
+            "properties": {
+                "item_id": {
+                    "type": "integer"
+                },
+                "price": {
+                    "description": "Price at time of adding",
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer"
+                }
+            }
+        },
+        "handlers.OrderResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "line_items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handlers.LinteItemResponse"
+                    }
+                },
+                "status": {
+                    "description": "pending, paid, failed",
+                    "type": "string"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "handlers.OrdersResponse": {
+            "type": "object",
+            "properties": {
+                "next_cursor": {
+                    "type": "string"
+                },
+                "orders": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handlers.OrderResponse"
+                    }
+                }
+            }
+        },
         "handlers.UpsertCartItemRequest": {
             "type": "object",
             "required": [
@@ -334,45 +454,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "stock": {
-                    "type": "integer"
-                }
-            }
-        },
-        "models.LineItem": {
-            "type": "object",
-            "properties": {
-                "item_id": {
-                    "type": "integer"
-                },
-                "price": {
-                    "description": "Price at time of adding",
-                    "type": "integer"
-                },
-                "quantity": {
-                    "type": "integer"
-                }
-            }
-        },
-        "models.Order": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "line_items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.LineItem"
-                    }
-                },
-                "status": {
-                    "description": "pending, paid, failed",
-                    "type": "string"
-                },
-                "total": {
-                    "type": "integer"
-                },
-                "user_id": {
                     "type": "integer"
                 }
             }

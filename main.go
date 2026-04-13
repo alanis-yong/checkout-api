@@ -14,6 +14,8 @@ import (
 
 	_ "checkout-api/docs"
 
+	"github.com/joho/godotenv"
+
 	"github.com/jackc/pgx/v5"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -28,13 +30,14 @@ import (
 // @name Authorization
 
 func main() {
+	_ = godotenv.Load()
 	ctx := context.Background()
 	// Todo Bonus: this looks dangerous maybe you can save it in a .env file
 	// then add it to .gitignore so that your secrets are not pushed to the server
 	// try https://github.com/spf13/viper
-	dsn := os.Getenv("DATABASE_URL")
+	dsn := os.Getenv("DB_URL")
 	if dsn == "" {
-		dsn = "postgresql://postgres:postgres@localhost:5432/postgres"
+		log.Fatal("DATABASE_URL environment variable is required")
 	}
 	conn, err := pgx.Connect(ctx, dsn)
 	if err != nil {
@@ -52,12 +55,14 @@ func main() {
 	h := handlers.NewHandler(postgresStore)
 
 	// cart
-	http.HandleFunc("GET /user/cart", h.GetUserCart)
-	http.HandleFunc("PATCH /user/cart/items/{item_id}", h.UpsertCartItem)
+	// In main.go
+	http.Handle("GET /user/cart", h.AuthMiddleware(http.HandlerFunc(h.GetUserCart)))
+	http.Handle("PATCH /user/cart/items/{item_id}", h.AuthMiddleware(http.HandlerFunc(h.UpsertCartItem)))
 	http.HandleFunc("DELETE /user/cart/items/{item_id}", h.RemoveCartItem)
 
 	// orders
 	http.HandleFunc("POST /orders", h.CreateOrder)
+	http.HandleFunc("GET /users/{id}/orders", h.GetUserOrders)
 
 	// items
 	http.HandleFunc("GET /items", h.GetItems)

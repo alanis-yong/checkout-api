@@ -11,10 +11,28 @@
 -- select i.description, oi.quantity from order_items as oi
 -- left join items as i
 -- on oi.item_id=i.id
--- select * from users;
+-- select *
+-- from orders;
 -- SELECT n.nspname as schema_name,
 --   c.relname as table_name
 -- FROM pg_catalog.pg_class c
 --   JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
 -- WHERE c.relname = 'orders';
-SET search_path TO public;
+-- SET search_path TO public;
+-- INSERT INTO orders (id, user_id, total, status, created_at)
+-- VALUES (1, 1, 150.00, 'processing', CURRENT_TIMESTAMP);
+-- DELETE FROM carts
+-- WHERE user_id = 5;
+-- INSERT INTO carts (id, user_id, item_id, quantity)
+-- VALUES (1, 5, 2, 3);
+select *
+from carts;
+-- select *
+-- from orders;
+-- INSERT INTO orders (id, user_id, total, status, created_at)
+-- VALUES (2, 5, 200.00, 'processing', CURRENT_TIMESTAMP);
+-- INSERT INTO orders (id, user_id, total, status, created_at)
+-- VALUES (4, 5, 30.00, 'processing', CURRENT_TIMESTAMP);
+-- select *
+-- from users;
+-- SELECT id FROM items;

@@ -39,7 +39,7 @@ type ItemStore interface {
 	FindUserByEmail(ctx context.Context, email string) (models.User, error)
 	GetUserCart(ctx context.Context, userID int) (*cart.Cart, error)
 	SaveCart(ctx context.Context, c *cart.Cart) error
-	GetUserOrders(ctx context.Context, userID int, cursor int, limit int) ([]models.Order, error)
+	GetUserOrders(ctx context.Context, userID int, limit int, cursor string) ([]models.Order, string, error)
 	RemoveCartItem(ctx context.Context, userID int, itemID int) error
 }
 
@@ -65,7 +65,36 @@ type IdempotencyRecord struct {
 
 type OrdersResponse struct {
 	Orders     []OrderResponse `json:"orders"`
-	NextCursor string          `json:"next_cursor,omitempty"`
+	NextCursor string          `json:"next_cursor"`
+}
+
+func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" || !strings.HasPrefix(strings.ToLower(authHeader), "bearer ") {
+			writeJSON(w, http.StatusUnauthorized, ErrorMessageResponse{Message: "unauthorized"})
+			return
+		}
+
+		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
+		tokenStr = strings.TrimPrefix(tokenStr, "bearer ")
+
+		var claims jwt.RegisteredClaims
+		_, err := jwt.ParseWithClaims(tokenStr, &claims, func(t *jwt.Token) (any, error) {
+			return []byte(SigningSecret), nil
+		})
+
+		if err != nil {
+			writeJSON(w, http.StatusUnauthorized, ErrorMessageResponse{Message: "invalid token"})
+			return
+		}
+
+		userID, _ := strconv.Atoi(claims.Subject)
+
+		// Inject the REAL ID into the request context
+		ctx := context.WithValue(r.Context(), "userID", int(userID))
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }
 
 // mockProcessPayment simulates a payment provider call.
@@ -82,66 +111,28 @@ func mockProcessPayment(amount int) PaymentResult {
 	}
 }
 
-// @Summary Add or Update Cart Item
-// @Description Adds an item to the user's cart or updates the quantity if it exists
-// @Tags Cart
-// @Accept json
-// @Produce json
-// @Security Bearer
-// @Param item_id path int true "Item ID"
-// @Param body body UpsertCartItemRequest true "Quantity"
-// @Success 204 "No Content"
-// @Failure 400 {object} ErrorMessageResponse
-// @Router /cart/{item_id} [put]
+// UpsertCartItem adds or updates an item in the cart
+// @Summary      Add or Update Cart Item
+// @Description  Adds an item to the user's cart or updates the quantity
+// @Tags         Cart
+// @Accept       json
+// @Produce      json
+// @Param        item_id  path      int                           true  "Item ID"
+// @Param        body     body      handlers.UpsertCartItemRequest true  "Quantity"
+// @Success      204      {object}  nil
+// @Failure      400      {object}  handlers.ErrorMessageResponse
+// @Security     Bearer
+// @Router       /user/cart/items/{item_id} [patch]
 func (h *Handler) UpsertCartItem(w http.ResponseWriter, r *http.Request) {
-	// TODO: this looks like it can be extracted as a commonly used
-	// Explore the middleware pattern in net/http and see if you can extract authentication logic
-	// into it's own handler(middleware)
-
-	// get authorization header
-	authorizationHeaderStr := r.Header.Get("Authorization")
-	if authorizationHeaderStr == "" {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+	// 1. Get the authenticated UserID from the request context.
+	// This value is injected by the AuthMiddleware.
+	userID, ok := r.Context().Value("userID").(int)
+	if !ok {
+		writeJSON(w, http.StatusUnauthorized, ErrorMessageResponse{Message: "unauthorized"})
 		return
 	}
 
-	// BeArER xxxx.yyyy.zzzz
-	scheme := "bearer "
-	if len(authorizationHeaderStr) < len(scheme) {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-	userScheme := authorizationHeaderStr[:len(scheme)] // BeArER
-	if !strings.EqualFold(scheme, userScheme) {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-
-	userJWT := authorizationHeaderStr[len(scheme):]
-	var claims jwt.RegisteredClaims
-	_, err := jwt.ParseWithClaims(
-		userJWT,
-		&claims,
-		func(t *jwt.Token) (any, error) {
-			return []byte(SigningSecret), nil
-		},
-		jwt.WithValidMethods([]string{"HS256"}),
-	)
-	if err != nil {
-		fmt.Printf("failed to parse jwt %q", err.Error())
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-
-	userID, err := strconv.Atoi(claims.Subject)
-	if err != nil {
-		fmt.Printf("failed to parse jwt %q", err.Error())
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-
-	// user is now authenticated
-
+	// 2. Extract and validate the item_id from the URL path.
 	itemIDStr := r.PathValue("item_id")
 	itemID, err := strconv.Atoi(itemIDStr)
 	if err != nil {
@@ -149,12 +140,14 @@ func (h *Handler) UpsertCartItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 3. Decode the incoming JSON body.
 	var req UpsertCartItemRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
+		writeJSON(w, http.StatusBadRequest, ErrorMessageResponse{Message: "invalid request body"})
 		return
 	}
 
+	// 4. Validate the request structure (e.g., quantity > 0) using the validator tags.
 	if err := validate.Struct(req); err != nil {
 		writeJSON(w, http.StatusBadRequest, ErrorMessageResponse{
 			Message: "Validation failed: quantity must be greater than 0",
@@ -162,29 +155,35 @@ func (h *Handler) UpsertCartItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 5. Verify the item actually exists in your catalog before adding it to a cart.
 	item, err := h.store.GetItem(r.Context(), itemID)
 	if err != nil || item == nil {
-		http.Error(w, "item not found", http.StatusNotFound)
+		writeJSON(w, http.StatusNotFound, ErrorMessageResponse{Message: "item not found"})
 		return
 	}
 
+	// 6. Fetch the user's current cart. If it doesn't exist, initialize a new one.
 	c, err := h.store.GetUserCart(r.Context(), userID)
 	if err != nil {
+		// If the error is simply "not found", we create a new cart aggregate.
 		c = cart.New(userID)
 	}
 
+	// 7. Add the item to the cart aggregate.
+	// This handles the logic of "Add new" vs "Update existing quantity".
 	if err := c.AddItem(itemID, req.Quantity, item.Price); err != nil {
 		writeJSON(w, http.StatusBadRequest, ErrorMessageResponse{Message: err.Error()})
 		return
 	}
 
-	// 5. PERSIST: Save the whole Aggregate back
+	// 8. Persist the updated cart back to the database.
 	if err := h.store.SaveCart(r.Context(), c); err != nil {
-		http.Error(w, "failed to save cart", http.StatusInternalServerError)
+		writeJSON(w, http.StatusInternalServerError, ErrorMessageResponse{Message: "failed to save cart"})
 		return
 	}
 
-	writeJSON(w, http.StatusNoContent, nil)
+	// 9. Return 204 No Content on success.
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (h *Handler) RemoveCartItem(w http.ResponseWriter, r *http.Request) {
@@ -223,66 +222,73 @@ func (h *Handler) RemoveCartItem(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// @Summary User Cart
-// @Description Users cart Object, User identification is by http header X-User-ID
+// @Summary Get User Cart
+// @Description Fetches the cart for the currently authenticated user.
 // @Tags Cart
 // @Produce json
+// @Security Bearer
 // @Success 200 {object} models.Cart
-// @Failure 400 {object} APIError
+// @Failure 404 {object} APIError "Cart not found"
 // @Router /user/cart [get]
 func (h *Handler) GetUserCart(w http.ResponseWriter, r *http.Request) {
-	// TODO: protect this method
-	userIDStr := r.Header.Get("X-User-ID")
-	if userIDStr == "" {
-		http.Error(w, "missing X-User-ID header", http.StatusBadRequest)
+	// 1. Pull the userID from the context (injected by your Auth Middleware)
+	// We use a type assertion .(int) to get the actual value
+	val := r.Context().Value("userID")
+	userID, ok := val.(int)
+
+	if !ok {
+		// If you are seeing your 401 error, it's because this 'ok' is false
+		writeJSON(w, http.StatusUnauthorized, ErrorMessageResponse{Message: "unauthorized"})
 		return
 	}
 
-	userID, err := strconv.Atoi(userIDStr)
+	// 2. Fetch the cart using the ID from the context
+	c, err := h.store.GetUserCart(r.Context(), userID)
 	if err != nil {
-		http.Error(w, "invalid X-User-ID header", http.StatusBadRequest)
+		status := h.mapErrorToStatus(err)
+		writeJSON(w, status, ErrorMessageResponse{Message: err.Error()})
 		return
 	}
 
-	cart, err := h.store.GetUserCart(r.Context(), userID)
-	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
+	// 3. Return the mapped CartResponse
+	response := CartResponse{
+		UserID: c.UserID(),
+		Items:  mapLineItemsToResponse(c.Items()),
 	}
 
-	// TODO: instead of returning Cart
-	// return CartResponse instead
-	// tip: refactor the GetUserCart method
-	writeJSON(w, http.StatusOK, cart)
+	writeJSON(w, http.StatusOK, response)
 }
 
 // @Summary Create Order
-// @Description Converts cart items into a permanent order
+// @Description Converts cart items into a permanent order. Returns 402 if mock payment fails.
 // @Tags Orders
 // @Accept json
 // @Produce json
 // @Param Idempotency-Key header string true "Idempotency Key"
 // @Param body body CreateOrderRequest true "Order Details"
-// @Success 201 {object} models.Order
-// @Failure 402 {object} map[string]interface{} "Payment Required"
+// @Success 201 {object} map[string]interface{} "Order Created Successfully"
+// @Failure 400 {object} ErrorMessageResponse "Bad Request"
+// @Failure 402 {object} ErrorMessageResponse "Payment Failed"
+// @Failure 500 {object} ErrorMessageResponse "Internal Server Error"
 // @Router /orders [post]
 func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
-	// TODO: protect this method
+	// 1. Extract UserID (In a real app, use the AuthMiddleware context)
 	userIDStr := r.Header.Get("X-User-ID")
 	if userIDStr == "" {
-		http.Error(w, "missing X-User-ID header", http.StatusBadRequest)
+		writeJSON(w, http.StatusBadRequest, ErrorMessageResponse{Message: "missing X-User-ID header"})
 		return
 	}
 
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
-		http.Error(w, "invalid X-User-ID header", http.StatusBadRequest)
+		writeJSON(w, http.StatusBadRequest, ErrorMessageResponse{Message: "invalid X-User-ID header"})
 		return
 	}
 
+	// 2. Handle Idempotency
 	idempotencyKey := r.Header.Get("Idempotency-Key")
 	if idempotencyKey == "" {
-		http.Error(w, "Idempotency-Key header is required", http.StatusBadRequest)
+		writeJSON(w, http.StatusBadRequest, ErrorMessageResponse{Message: "Idempotency-Key header is required"})
 		return
 	}
 
@@ -296,17 +302,19 @@ func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		delete(h.idempotencyCache, idempotencyKey)
 	}
 
+	// 3. Decode Request
 	var req CreateOrderRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
+		writeJSON(w, http.StatusBadRequest, ErrorMessageResponse{Message: "invalid request body"})
 		return
 	}
 
 	if len(req.LineItems) == 0 {
-		http.Error(w, "items must not be empty", http.StatusBadRequest)
+		writeJSON(w, http.StatusBadRequest, ErrorMessageResponse{Message: "items must not be empty"})
 		return
 	}
 
+	// 4. Map to models
 	items := make([]models.LineItem, 0, len(req.LineItems))
 	for _, i := range req.LineItems {
 		items = append(items, models.LineItem{
@@ -316,45 +324,62 @@ func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
+	// 5. Create Order in Database (Initial status: pending)
 	order, err := h.store.CreateOrder(r.Context(), userID, items, req.Total, "pending")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		writeJSON(w, http.StatusInternalServerError, ErrorMessageResponse{Message: err.Error()})
 		return
 	}
 
+	// 6. Process Payment
 	paymentResult := mockProcessPayment(req.Total)
 
+	// 7. Update Status based on payment result
 	status := "paid"
 	if !paymentResult.Success {
 		status = "failed"
 	}
 
 	if err := h.store.UpdateOrderStatus(r.Context(), order.ID, status); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		writeJSON(w, http.StatusInternalServerError, ErrorMessageResponse{Message: "failed to update order status"})
 		return
 	}
 	order.Status = status
 
+	// 8. Handle Payment Failure (The Homework Requirement)
+	if !paymentResult.Success {
+		// Use the extended ErrorHandler logic
+		errToMap := cart.ErrPaymentFailed
+		statusCode := h.mapErrorToStatus(errToMap) // Returns 402
+
+		response := ErrorMessageResponse{Message: errToMap.Error()} // "payment failed"
+
+		// Cache the failure and return
+		responseBody, _ := json.Marshal(response)
+		h.saveToIdempotency(idempotencyKey, statusCode, responseBody)
+
+		writeJSON(w, statusCode, response)
+		return
+	}
+
+	// 9. Handle Success
 	responseData := map[string]any{
 		"order":   order,
 		"payment": paymentResult,
 	}
 
-	statusCode := http.StatusCreated
-	if !paymentResult.Success {
-		statusCode = http.StatusPaymentRequired
-	}
-
 	responseBody, _ := json.Marshal(responseData)
-	h.idempotencyCache[idempotencyKey] = &IdempotencyRecord{
-		Response:   responseBody,
-		StatusCode: statusCode,
+	h.saveToIdempotency(idempotencyKey, http.StatusCreated, responseBody)
+
+	writeJSON(w, http.StatusCreated, responseData)
+}
+
+func (h *Handler) saveToIdempotency(key string, status int, body []byte) {
+	h.idempotencyCache[key] = &IdempotencyRecord{
+		Response:   body,
+		StatusCode: status,
 		Expiry:     time.Now().Add(24 * time.Hour),
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(statusCode)
-	w.Write(responseBody)
 }
 
 // @Summary Get all items
@@ -525,51 +550,46 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 	json.NewEncoder(w).Encode(v)
 }
 
+// GetUserOrders returns a paginated list of orders for a user.
+// @Summary      Get user orders
+// @Description  Get a list of orders for a specific user with cursor pagination
+// @Tags         Orders
+// @Produce      json
+// @Param        id      path      int     true  "User ID"
+// @Param        limit   query     int     false "Limit"
+// @Param        cursor  query     string  false "Cursor"
+// @Success      200     {object}  OrdersResponse
+// @Failure      400     {object}  ErrorMessageResponse
+// @Router       /users/{id}/orders [get]
 func (h *Handler) GetUserOrders(w http.ResponseWriter, r *http.Request) {
-	// 1. Get userID from path
-	userIDStr := r.PathValue("id")
-	userID, err := strconv.Atoi(userIDStr)
-	if err != nil {
-		http.Error(w, "invalid user id", http.StatusBadRequest)
-		return
-	}
+	// 1. Get UserID from path (you likely already have this logic)
+	idStr := r.PathValue("id")
+	userID, _ := strconv.Atoi(idStr)
 
-	// 2. Parse pagination parameters from Query String (?limit=10&cursor=50)
+	// 2. Parse pagination params
 	limitStr := r.URL.Query().Get("limit")
-	cursorStr := r.URL.Query().Get("cursor")
-
-	limit, err := strconv.Atoi(limitStr)
-	if err != nil || limit <= 0 {
-		limit = 10 // Default page size
+	limit, _ := strconv.Atoi(limitStr)
+	if limit <= 0 {
+		limit = 10 // Default limit
 	}
+	cursor := r.URL.Query().Get("cursor")
 
-	// If cursor is empty (first page), we use 0 or a very large number
-	// depending on if you sort ASC or DESC.
-	cursor, _ := strconv.Atoi(cursorStr)
-
-	// 3. Fetch data from the Store
-	orders, err := h.store.GetUserOrders(r.Context(), userID, cursor, limit)
+	// 3. Fetch data from store
+	orders, nextCursor, err := h.store.GetUserOrders(r.Context(), userID, limit, cursor)
 	if err != nil {
-		http.Error(w, "failed to fetch orders", http.StatusInternalServerError)
+		status := h.mapErrorToStatus(err)
+		writeJSON(w, status, ErrorMessageResponse{Message: err.Error()})
 		return
 	}
 
-	// 4. Determine the "Next Cursor"
-	// If we got items back, the cursor for the NEXT page is the ID of the LAST item.
-	var nextCursor string
-	if len(orders) > 0 {
-		lastOrder := orders[len(orders)-1]
-		nextCursor = strconv.Itoa(lastOrder.ID)
-	}
-
-	// 5. Build the Response
-	// (Assuming you have a helper to map models.Order to OrderResponse)
-	resp := OrdersResponse{
+	// 4. Map to response
+	response := OrdersResponse{
 		Orders:     mapOrdersToResponse(orders),
 		NextCursor: nextCursor,
 	}
 
-	writeJSON(w, http.StatusOK, resp)
+	writeJSON(w, http.StatusOK, response)
+	fmt.Printf("DEBUG: UserID parsed is: %d\n", userID)
 }
 
 func mapOrdersToResponse(orders []models.Order) []OrderResponse {
@@ -583,4 +603,39 @@ func mapOrdersToResponse(orders []models.Order) []OrderResponse {
 		})
 	}
 	return out
+}
+
+func mapLineItemsToResponse(items []cart.LineItem) []CartItemResponse {
+	res := make([]CartItemResponse, 0, len(items))
+	for _, item := range items {
+		res = append(res, CartItemResponse{
+			ID:       item.ItemID(),
+			Price:    item.Price(),
+			Quantity: item.Quantity(),
+			// Note: Name, Description, and Stock would need to be
+			// fetched from the ItemStore if you want them in the response!
+		})
+	}
+	return res
+}
+
+func (h *Handler) mapErrorToStatus(err error) int {
+	switch {
+	// 404: If the cart isn't in the DB
+	case errors.Is(err, cart.ErrCartNotFound):
+		return http.StatusNotFound
+
+	// 402: If the payment failed during checkout
+	// Adjust the package name (cart.) if you moved this to an orders package
+	case errors.Is(err, cart.ErrPaymentFailed):
+		return http.StatusPaymentRequired
+
+	// 400: Optional - for validation or bad input
+	case errors.Is(err, cart.ErrInvalidQuantity):
+		return http.StatusBadRequest
+
+	// 500: The "catch-all" for things you didn't expect
+	default:
+		return http.StatusInternalServerError
+	}
 }

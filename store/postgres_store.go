@@ -6,6 +6,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
+	"sync"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -13,6 +15,7 @@ import (
 // PostgresStore is an in-memory store for items and orders.
 type PostgresStore struct {
 	conn *pgx.Conn
+	mu   sync.Mutex
 }
 
 // NewPostgresStore creates a Store pre-loaded with seed data.
@@ -132,30 +135,41 @@ func (s *PostgresStore) UpsertCartItem(ctx context.Context, userID int, itemID i
 	return err
 }
 
-func (s *PostgresStore) GetUserCart(ctx context.Context, userID int) (*cart.Cart, error) { // TODO: returning a slice of models.Cart does not seem useful for our API
-	// return a slice of items that belong to the user instead
-	// use GetItemsFromUserCart(ctx context.Context, userID int) (pgx.Rows, error)
-
+func (s *PostgresStore) GetUserCart(ctx context.Context, userID int) (*cart.Cart, error) {
 	rows, err := s.DB().GetCartByUserID(ctx, userID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get cart for user %d: %w", userID, err)
+		return nil, err
 	}
-	defer rows.Close()
 
-	items := make([]models.Cart, 0)
+	// 1. Create a temporary struct to hold the row data
+	type cartRow struct {
+		itemID   int
+		quantity int
+	}
+	var tempRows []cartRow
+
+	// 2. Quickly scan everything and close the connection handle
 	for rows.Next() {
-		var row models.Cart
-		row.UserID = userID
-		if err := rows.Scan(&row.ItemID, &row.Quantity); err != nil {
-			return nil, fmt.Errorf("failed to scan cart row: %w", err)
+		var r cartRow
+		if err := rows.Scan(&r.itemID, &r.quantity); err != nil {
+			rows.Close()
+			return nil, err
 		}
-		items = append(items, row)
+		tempRows = append(tempRows, r)
 	}
-	if rows.Err() != nil {
-		return nil, rows.Err()
+	rows.Close() // <--- CRITICAL: Connection is now free!
+
+	newCart := cart.New(userID)
+
+	// 3. Now it is safe to call GetItem
+	for _, r := range tempRows {
+		item, err := s.GetItem(ctx, r.itemID)
+		if err == nil && item != nil {
+			newCart.AddItem(r.itemID, r.quantity, item.Price)
+		}
 	}
 
-	return cart.New(userID), nil
+	return newCart, nil
 }
 
 func (s *PostgresStore) DeleteUserCart(ctx context.Context, userID int) error {
@@ -184,43 +198,81 @@ func (s *PostgresStore) FindUserByEmail(ctx context.Context, email string) (mode
 	return user, nil
 }
 
-func (s *PostgresStore) GetUserOrders(ctx context.Context, userID int, cursor int, limit int) ([]models.Order, error) {
+func (s *PostgresStore) GetUserOrders(ctx context.Context, userID int, limit int, cursor string) ([]models.Order, string, error) {
 	var rows pgx.Rows
 	var err error
 
-	if cursor == 0 {
+	// 1. Determine which Query method to use
+	if cursor == "" {
 		rows, err = s.DB().GetOrdersByUserIDFirstPage(ctx, userID, limit)
 	} else {
-		rows, err = s.DB().GetOrdersByUserIDWithCursor(ctx, userID, cursor, limit)
+		cursorID, convErr := strconv.Atoi(cursor)
+		if convErr != nil {
+			return nil, "", fmt.Errorf("invalid cursor format: %w", convErr)
+		}
+		rows, err = s.DB().GetOrdersByUserIDWithCursor(ctx, userID, cursorID, limit)
 	}
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to select orders: %w", err)
+		return nil, "", fmt.Errorf("failed to query orders: %w", err)
 	}
 	defer rows.Close()
 
-	orders := make([]models.Order, 0, limit)
+	// 2. Scan the rows
+	var orders []models.Order
 	for rows.Next() {
 		var o models.Order
-		// Scanning into the fields present in your models.Order
-		// Order: ID, UserID, Total, Status
-		err := rows.Scan(&o.ID, &o.UserID, &o.Total, &o.Status)
+		// Note: Matches the 4 columns in your Query methods: id, user_id, total, status
+		err := rows.Scan(
+			&o.ID,
+			&o.UserID,
+			&o.Total,
+			&o.Status,
+		)
 		if err != nil {
-			return nil, fmt.Errorf("failed to scan order row: %w", err)
+			return nil, "", fmt.Errorf("failed to scan order row: %w", err)
 		}
-
-		// Initialize empty slice so JSON returns [] instead of null
-		o.Items = []models.LineItem{}
-
 		orders = append(orders, o)
 	}
 
-	return orders, nil
+	if err = rows.Err(); err != nil {
+		return nil, "", fmt.Errorf("row iteration error: %w", err)
+	}
+
+	// 3. Determine the next_cursor
+	var nextCursor string
+	if len(orders) > 0 && len(orders) == limit {
+		// Use the ID of the last element as the cursor for the next request
+		nextCursor = strconv.Itoa(orders[len(orders)-1].ID)
+	}
+
+	return orders, nextCursor, nil
 }
 
 func (s *PostgresStore) SaveCart(ctx context.Context, c *cart.Cart) error {
-	// TODO: Implement the SQL logic to UPSERT cart items into the database
-	// For now, we return nil so the code compiles and you can see your Swagger UI
-	fmt.Printf("Saving cart for user %d with %d items\n", c.UserID, len(c.Items()))
+	s.mu.Lock()         // Lock at the start
+	defer s.mu.Unlock() // Unlock at the end
+	// Check if connection is still alive
+	if err := s.conn.Ping(ctx); err != nil {
+		fmt.Printf("Connection lost: %v\n", err)
+		return err
+	}
+
+	fmt.Printf("Saving cart for user %d with %d items\n", c.UserID(), len(c.Items()))
+
+	for _, item := range c.Items() {
+		commandTag, err := s.DB().UpsertCart(ctx, c.UserID(), item.ItemID(), item.Quantity())
+		if err != nil {
+			fmt.Printf("Upsert Error: %v\n", err)
+			return err
+		}
+
+		// IMPORTANT: Check if the DB actually did something
+		if commandTag.RowsAffected() == 0 {
+			fmt.Printf("Warning: 0 rows affected for item %d. Check your table constraints!\n", item.ItemID())
+		} else {
+			fmt.Printf("Successfully saved item %d. Rows affected: %d\n", item.ItemID(), commandTag.RowsAffected())
+		}
+	}
 	return nil
 }

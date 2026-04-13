@@ -57,6 +57,43 @@ definitions:
       quantity:
         type: integer
     type: object
+  handlers.LinteItemResponse:
+    properties:
+      item_id:
+        type: integer
+      price:
+        description: Price at time of adding
+        type: integer
+      quantity:
+        type: integer
+    type: object
+  handlers.OrderResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      line_items:
+        items:
+          $ref: '#/definitions/handlers.LinteItemResponse'
+        type: array
+      status:
+        description: pending, paid, failed
+        type: string
+      total:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  handlers.OrdersResponse:
+    properties:
+      next_cursor:
+        type: string
+      orders:
+        items:
+          $ref: '#/definitions/handlers.OrderResponse'
+        type: array
+    type: object
   handlers.UpsertCartItemRequest:
     properties:
       quantity:
@@ -89,32 +126,6 @@ definitions:
       stock:
         type: integer
     type: object
-  models.LineItem:
-    properties:
-      item_id:
-        type: integer
-      price:
-        description: Price at time of adding
-        type: integer
-      quantity:
-        type: integer
-    type: object
-  models.Order:
-    properties:
-      id:
-        type: integer
-      line_items:
-        items:
-          $ref: '#/definitions/models.LineItem'
-        type: array
-      status:
-        description: pending, paid, failed
-        type: string
-      total:
-        type: integer
-      user_id:
-        type: integer
-    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -122,37 +133,6 @@ info:
   title: Checkout API
   version: "1.0"
 paths:
-  /cart/{item_id}:
-    put:
-      consumes:
-      - application/json
-      description: Adds an item to the user's cart or updates the quantity if it exists
-      parameters:
-      - description: Item ID
-        in: path
-        name: item_id
-        required: true
-        type: integer
-      - description: Quantity
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.UpsertCartItemRequest'
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorMessageResponse'
-      security:
-      - Bearer: []
-      summary: Add or Update Cart Item
-      tags:
-      - Cart
   /items:
     get:
       description: Get a list of all products in the store
@@ -196,7 +176,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Converts cart items into a permanent order
+      description: Converts cart items into a permanent order. Returns 402 if mock
+        payment fails.
       parameters:
       - description: Idempotency Key
         in: header
@@ -213,20 +194,28 @@ paths:
       - application/json
       responses:
         "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/models.Order'
-        "402":
-          description: Payment Required
+          description: Order Created Successfully
           schema:
             additionalProperties: true
             type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorMessageResponse'
+        "402":
+          description: Payment Failed
+          schema:
+            $ref: '#/definitions/handlers.ErrorMessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorMessageResponse'
       summary: Create Order
       tags:
       - Orders
   /user/cart:
     get:
-      description: Users cart Object, User identification is by http header X-User-ID
+      description: Fetches the cart for the currently authenticated user.
       produces:
       - application/json
       responses:
@@ -234,13 +223,77 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.Cart'
+        "404":
+          description: Cart not found
+          schema:
+            $ref: '#/definitions/handlers.APIError'
+      security:
+      - Bearer: []
+      summary: Get User Cart
+      tags:
+      - Cart
+  /user/cart/items/{item_id}:
+    patch:
+      consumes:
+      - application/json
+      description: Adds an item to the user's cart or updates the quantity
+      parameters:
+      - description: Item ID
+        in: path
+        name: item_id
+        required: true
+        type: integer
+      - description: Quantity
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpsertCartItemRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/handlers.APIError'
-      summary: User Cart
+            $ref: '#/definitions/handlers.ErrorMessageResponse'
+      security:
+      - Bearer: []
+      summary: Add or Update Cart Item
       tags:
       - Cart
+  /users/{id}/orders:
+    get:
+      description: Get a list of orders for a specific user with cursor pagination
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Cursor
+        in: query
+        name: cursor
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.OrdersResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorMessageResponse'
+      summary: Get user orders
+      tags:
+      - Orders
 securityDefinitions:
   Bearer:
     in: header
