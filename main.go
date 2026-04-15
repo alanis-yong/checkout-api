@@ -61,7 +61,7 @@ func main() {
 	http.HandleFunc("DELETE /user/cart/items/{item_id}", h.RemoveCartItem)
 
 	// orders
-	http.HandleFunc("POST /orders", h.CreateOrder)
+	http.Handle("POST /orders", h.AuthMiddleware(http.HandlerFunc(h.CreateOrder)))
 	http.HandleFunc("GET /users/{id}/orders", h.GetUserOrders)
 
 	// items

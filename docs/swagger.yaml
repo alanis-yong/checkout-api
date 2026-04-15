@@ -210,6 +210,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/handlers.ErrorMessageResponse'
+      security:
+      - Bearer: []
       summary: Create Order
       tags:
       - Orders

@@ -77,7 +77,6 @@ func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {
 		}
 
 		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
-		tokenStr = strings.TrimPrefix(tokenStr, "bearer ")
 
 		var claims jwt.RegisteredClaims
 		_, err := jwt.ParseWithClaims(tokenStr, &claims, func(t *jwt.Token) (any, error) {
@@ -231,18 +230,14 @@ func (h *Handler) RemoveCartItem(w http.ResponseWriter, r *http.Request) {
 // @Failure 404 {object} APIError "Cart not found"
 // @Router /user/cart [get]
 func (h *Handler) GetUserCart(w http.ResponseWriter, r *http.Request) {
-	// 1. Pull the userID from the context (injected by your Auth Middleware)
-	// We use a type assertion .(int) to get the actual value
 	val := r.Context().Value("userID")
 	userID, ok := val.(int)
 
 	if !ok {
-		// If you are seeing your 401 error, it's because this 'ok' is false
 		writeJSON(w, http.StatusUnauthorized, ErrorMessageResponse{Message: "unauthorized"})
 		return
 	}
 
-	// 2. Fetch the cart using the ID from the context
 	c, err := h.store.GetUserCart(r.Context(), userID)
 	if err != nil {
 		status := h.mapErrorToStatus(err)
@@ -250,7 +245,14 @@ func (h *Handler) GetUserCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 3. Return the mapped CartResponse
+	// --- ADD THIS CHECK HERE ---
+	// If the cart exists but has 0 items, treat it as "Not Found"
+	if len(c.Items()) == 0 {
+		writeJSON(w, http.StatusNotFound, ErrorMessageResponse{Message: "cart not found"})
+		return
+	}
+	// ---------------------------
+
 	response := CartResponse{
 		UserID: c.UserID(),
 		Items:  mapLineItemsToResponse(c.Items()),
@@ -264,6 +266,7 @@ func (h *Handler) GetUserCart(w http.ResponseWriter, r *http.Request) {
 // @Tags Orders
 // @Accept json
 // @Produce json
+// @Security Bearer
 // @Param Idempotency-Key header string true "Idempotency Key"
 // @Param body body CreateOrderRequest true "Order Details"
 // @Success 201 {object} map[string]interface{} "Order Created Successfully"
@@ -272,20 +275,15 @@ func (h *Handler) GetUserCart(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} ErrorMessageResponse "Internal Server Error"
 // @Router /orders [post]
 func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
-	// 1. Extract UserID (In a real app, use the AuthMiddleware context)
-	userIDStr := r.Header.Get("X-User-ID")
-	if userIDStr == "" {
-		writeJSON(w, http.StatusBadRequest, ErrorMessageResponse{Message: "missing X-User-ID header"})
+	// 1. Authorization: Identify the user
+	val := r.Context().Value("userID")
+	userID, ok := val.(int)
+	if !ok {
+		writeJSON(w, http.StatusUnauthorized, ErrorMessageResponse{Message: "unauthorized"})
 		return
 	}
 
-	userID, err := strconv.Atoi(userIDStr)
-	if err != nil {
-		writeJSON(w, http.StatusBadRequest, ErrorMessageResponse{Message: "invalid X-User-ID header"})
-		return
-	}
-
-	// 2. Handle Idempotency
+	// 2. Idempotency: Ensure we don't process the same request twice
 	idempotencyKey := r.Header.Get("Idempotency-Key")
 	if idempotencyKey == "" {
 		writeJSON(w, http.StatusBadRequest, ErrorMessageResponse{Message: "Idempotency-Key header is required"})
@@ -302,19 +300,40 @@ func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		delete(h.idempotencyCache, idempotencyKey)
 	}
 
-	// 3. Decode Request
+	// 3. Decode Request: Parse the incoming JSON
 	var req CreateOrderRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, ErrorMessageResponse{Message: "invalid request body"})
 		return
 	}
 
+	// --- STEP 4: THE GATEKEEPER (MOCK PAYMENT) ---
+	// We check payment BEFORE we touch the database.
+	paymentResult := mockProcessPayment(req.Total)
+
+	if !paymentResult.Success {
+		// Use your custom error variable
+		errToMap := cart.ErrPaymentFailed
+
+		// Use your mapping function to get the 402 Status code
+		statusCode := h.mapErrorToStatus(errToMap)
+
+		response := ErrorMessageResponse{Message: errToMap.Error()}
+		responseBody, _ := json.Marshal(response)
+
+		// Cache the failure so a retry returns the same 402
+		h.saveToIdempotency(idempotencyKey, statusCode, responseBody)
+
+		writeJSON(w, statusCode, response)
+		return // STOP: The database is never reached
+	}
+
+	// --- STEP 5: VALIDATION & MAPPING ---
 	if len(req.LineItems) == 0 {
 		writeJSON(w, http.StatusBadRequest, ErrorMessageResponse{Message: "items must not be empty"})
 		return
 	}
 
-	// 4. Map to models
 	items := make([]models.LineItem, 0, len(req.LineItems))
 	for _, i := range req.LineItems {
 		items = append(items, models.LineItem{
@@ -324,45 +343,15 @@ func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	// 5. Create Order in Database (Initial status: pending)
-	order, err := h.store.CreateOrder(r.Context(), userID, items, req.Total, "pending")
+	// --- STEP 6: DATABASE PERSISTENCE ---
+	// Payment passed, so we save the order as "paid"
+	order, err := h.store.CreateOrder(r.Context(), userID, items, req.Total, "paid")
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, ErrorMessageResponse{Message: err.Error()})
 		return
 	}
 
-	// 6. Process Payment
-	paymentResult := mockProcessPayment(req.Total)
-
-	// 7. Update Status based on payment result
-	status := "paid"
-	if !paymentResult.Success {
-		status = "failed"
-	}
-
-	if err := h.store.UpdateOrderStatus(r.Context(), order.ID, status); err != nil {
-		writeJSON(w, http.StatusInternalServerError, ErrorMessageResponse{Message: "failed to update order status"})
-		return
-	}
-	order.Status = status
-
-	// 8. Handle Payment Failure (The Homework Requirement)
-	if !paymentResult.Success {
-		// Use the extended ErrorHandler logic
-		errToMap := cart.ErrPaymentFailed
-		statusCode := h.mapErrorToStatus(errToMap) // Returns 402
-
-		response := ErrorMessageResponse{Message: errToMap.Error()} // "payment failed"
-
-		// Cache the failure and return
-		responseBody, _ := json.Marshal(response)
-		h.saveToIdempotency(idempotencyKey, statusCode, responseBody)
-
-		writeJSON(w, statusCode, response)
-		return
-	}
-
-	// 9. Handle Success
+	// --- STEP 7: SUCCESS RESPONSE ---
 	responseData := map[string]any{
 		"order":   order,
 		"payment": paymentResult,
@@ -562,7 +551,7 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 // @Failure      400     {object}  ErrorMessageResponse
 // @Router       /users/{id}/orders [get]
 func (h *Handler) GetUserOrders(w http.ResponseWriter, r *http.Request) {
-	// 1. Get UserID from path (you likely already have this logic)
+	// 1. Get UserID from path
 	idStr := r.PathValue("id")
 	userID, _ := strconv.Atoi(idStr)
 
@@ -570,26 +559,43 @@ func (h *Handler) GetUserOrders(w http.ResponseWriter, r *http.Request) {
 	limitStr := r.URL.Query().Get("limit")
 	limit, _ := strconv.Atoi(limitStr)
 	if limit <= 0 {
-		limit = 10 // Default limit
+		limit = 10
 	}
 	cursor := r.URL.Query().Get("cursor")
 
-	// 3. Fetch data from store
-	orders, nextCursor, err := h.store.GetUserOrders(r.Context(), userID, limit, cursor)
+	// 3. Fetch data from store — ASK FOR limit + 1
+	// We want to find 3 items so we can prove a 3rd exists, even if we only show 2.
+	orders, _, err := h.store.GetUserOrders(r.Context(), userID, limit+1, cursor)
 	if err != nil {
 		status := h.mapErrorToStatus(err)
 		writeJSON(w, status, ErrorMessageResponse{Message: err.Error()})
 		return
 	}
 
-	// 4. Map to response
+	// 4. Logic to determine the "Fact" of the next page
+	finalNextCursor := ""
+	if len(orders) > limit {
+		// FACT: We found 3 items, so there is definitely a next page.
+
+		// We set the cursor to the ID of the 2nd item (limit-1)
+		// This tells the frontend: "Next time, start looking for IDs smaller than this one."
+		lastVisibleItem := orders[limit-1]
+		finalNextCursor = strconv.Itoa(lastVisibleItem.ID)
+
+		// IMPORTANT: Chop off the 3rd item so the user only sees 2!
+		orders = orders[:limit]
+	} else {
+		// FACT: We found 2 or fewer items. No next page exists.
+		finalNextCursor = ""
+	}
+
+	// 5. Map to response
 	response := OrdersResponse{
 		Orders:     mapOrdersToResponse(orders),
-		NextCursor: nextCursor,
+		NextCursor: finalNextCursor,
 	}
 
 	writeJSON(w, http.StatusOK, response)
-	fmt.Printf("DEBUG: UserID parsed is: %d\n", userID)
 }
 
 func mapOrdersToResponse(orders []models.Order) []OrderResponse {

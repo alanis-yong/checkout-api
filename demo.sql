@@ -25,8 +25,8 @@
 -- WHERE user_id = 5;
 -- INSERT INTO carts (id, user_id, item_id, quantity)
 -- VALUES (1, 5, 2, 3);
-select *
-from carts;
+-- select *
+-- from carts;
 -- select *
 -- from orders;
 -- INSERT INTO orders (id, user_id, total, status, created_at)
@@ -36,3 +36,5 @@ from carts;
 -- select *
 -- from users;
 -- SELECT id FROM items;
+DELETE FROM carts
+WHERE user_id = 5;

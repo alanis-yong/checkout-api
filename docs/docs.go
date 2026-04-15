@@ -77,6 +77,11 @@ const docTemplate = `{
         },
         "/orders": {
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Converts cart items into a permanent order. Returns 402 if mock payment fails.",
                 "consumes": [
                     "application/json"
