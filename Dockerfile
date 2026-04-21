@@ -1,23 +1,23 @@
-# --- Build stage ---
-FROM golang:1.24-alpine AS builder
+# Switch to 1.25 so the libraries are happy
+FROM golang:1.25-rc-alpine AS builder
 
 WORKDIR /app
+
+# Disable the toolchain check that causes the "RC" error
+ENV GOTOOLCHAIN=local
 
 COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /checkout-api .
+RUN CGO_ENABLED=0 GOOS=linux go build -o main .
 
-# --- Runtime stage ---
-FROM alpine:3.21
-
-RUN apk add --no-cache ca-certificates
-
-WORKDIR /app
-
-COPY --from=builder /checkout-api .
+# Final Stage
+FROM alpine:latest
+RUN apk --no-cache add ca-certificates
+WORKDIR /root/
+COPY --from=builder /app/main .
+COPY virtual-items.json .
 
 EXPOSE 8080
-
-CMD ["/app/checkout-api"]
+CMD ["./main"]

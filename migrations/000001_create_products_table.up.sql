@@ -1,0 +1,11 @@
+BEGIN;
+CREATE TABLE IF NOT EXISTS products (
+  id SERIAL PRIMARY KEY,
+  sku TEXT UNIQUE NOT NULL,
+  name_en TEXT NOT NULL,
+  name_cn TEXT,
+  price_usd NUMERIC(10, 2) NOT NULL,
+  price_myr NUMERIC(10, 2) NOT NULL,
+  purchase_limit INTEGER DEFAULT 0
+);
+COMMIT;

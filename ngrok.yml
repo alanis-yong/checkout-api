@@ -1,0 +1,7 @@
+version: 2
+authtoken: 3AFDgglrcmJfCJzGHODRCMD4jmR_6JyQDaViUUmveHXgSyh5c
+tunnels:
+  xsolla-tunnel:
+    proto: http
+    addr: 8080
+    domain: miquel-nondefinite-paradigmatically.ngrok-free.dev

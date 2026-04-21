@@ -2,100 +2,79 @@ package main
 
 import (
 	"context"
-	"encoding/json"
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"time"
 
 	"checkout-api/handlers"
 	"checkout-api/store"
 
-	_ "checkout-api/docs"
-
-	"github.com/joho/godotenv"
-
-	"github.com/jackc/pgx/v5"
-	httpSwagger "github.com/swaggo/http-swagger"
+	_ "github.com/lib/pq"
 )
 
-// @title Checkout API
-// @version 1.0
-// @description This is a sample checkout server for Alanis' Store.
-// @host localhost:8080
-// @BasePath /
-// @securityDefinitions.apikey Bearer
-// @in header
-// @name Authorization
-
 func main() {
-	_ = godotenv.Load()
-	ctx := context.Background()
-	// Todo Bonus: this looks dangerous maybe you can save it in a .env file
-	// then add it to .gitignore so that your secrets are not pushed to the server
-	// try https://github.com/spf13/viper
-	dsn := os.Getenv("DB_URL")
-	if dsn == "" {
-		log.Fatal("DATABASE_URL environment variable is required")
-	}
-	conn, err := pgx.Connect(ctx, dsn)
+	// 1. Database connection using your Docker settings
+	// Note: 'host' matches the service name in your docker-compose.yml
+	dsn := "host=xsolla-gamestore-db user=alanis password=testing12345 dbname=gamestore_db port=5432 sslmode=disable"
+	db, err := sql.Open("postgres", dsn)
 	if err != nil {
-		panic(err)
+		log.Fatal("Could not connect to database:", err)
+	}
+	defer db.Close()
+
+	// 2. Initialize the store
+	queries := store.New(db)
+
+	// 3. --- SEED THE DATABASE ---
+	// This reads your virtual-items.json and syncs it to Postgres at startup
+	fmt.Println("🔄 Syncing database with virtual-items.json...")
+	if err := queries.SeedDatabase(context.Background()); err != nil {
+		// We log the error but don't stop the server, just in case
+		// the file is missing but the DB already has data.
+		log.Printf("⚠️ Seeding warning: %v", err)
 	}
 
-	err = conn.Ping(ctx)
-	if err != nil {
-		panic(err)
+	// 4. Initialize Handler with your Xsolla credentials
+	h := &handlers.Handler{
+		MerchantID: "879363",
+		APIKey:     "080ded9939889e5b8c567ae039cb026fedd4ecf8",
+		ProjectID:  304862,
+		Store:      queries,
 	}
-	fmt.Println("successfully connected to db")
 
-	// s := store.NewInMemStore()
-	postgresStore := store.NewPostgresStore(conn)
-	h := handlers.NewHandler(postgresStore)
+	// 5. Setup Routes
+	mux := http.NewServeMux()
 
-	// cart
-	// In main.go
-	http.Handle("GET /user/cart", h.AuthMiddleware(http.HandlerFunc(h.GetUserCart)))
-	http.Handle("PATCH /user/cart/items/{item_id}", h.AuthMiddleware(http.HandlerFunc(h.UpsertCartItem)))
-	http.HandleFunc("DELETE /user/cart/items/{item_id}", h.RemoveCartItem)
+	// Storefront routes
+	mux.HandleFunc("GET /api/products", h.GetProducts)
+	mux.HandleFunc("GET /api/inventory", h.GetInventory)
 
-	// orders
-	http.Handle("POST /orders", h.AuthMiddleware(http.HandlerFunc(h.CreateOrder)))
-	http.HandleFunc("GET /users/{id}/orders", h.GetUserOrders)
+	// Payment & Webhook routes
+	mux.HandleFunc("POST /api/payments/token", h.GetXsollaToken)
+	mux.HandleFunc("POST /api/webhooks/xsolla", h.HandleXsollaWebhook)
 
-	// items
-	http.HandleFunc("GET /items", h.GetItems)
-	http.HandleFunc("GET /items/{item_id}", h.GetItemByID)
+	// 6. Wrap with CORS for your Vite frontend (localhost:5173)
+	finalHandler := enableCORS(mux)
 
-	// users
-	http.HandleFunc("POST /signup", h.CreateUser)
-	http.HandleFunc("POST /login", h.LoginUser)
+	fmt.Println("🚀 Server starting on :8080")
+	if err := http.ListenAndServe(":8080", finalHandler); err != nil {
+		log.Fatal(err)
+	}
+}
 
-	// TODO: implement Get RefreshToken
-	http.HandleFunc("GET /token", h.IssueJWT)
+// enableCORS handles Cross-Origin Resource Sharing for the React frontend
+func enableCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Idempotency-Key, Authorization")
 
-	// health
-	http.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
-		dbStatus := "ok"
-		if err := conn.Ping(r.Context()); err != nil {
-			dbStatus = "unreachable"
+		// Handle preflight requests
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
 		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		_ = json.NewEncoder(w).Encode(map[string]string{
-			"status":    "ok",
-			"database":  dbStatus,
-			"timestamp": time.Now().UTC().Format(time.RFC3339),
-		})
+		next.ServeHTTP(w, r)
 	})
-	// @title Checkout API
-	// @version 1.0
-	// @description This is the backend for Alanis' Store.
-	// @host localhost:8080
-	// @BasePath /
-	http.HandleFunc("GET /swagger/{any...}", httpSwagger.WrapHandler)
-
-	fmt.Println("Server starting on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
 }

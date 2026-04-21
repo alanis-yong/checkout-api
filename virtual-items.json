@@ -1,0 +1,4378 @@
+{
+    "virtual_currency": [],
+    "virtual_items": [
+        {
+            "item_id": 1367693,
+            "sku": "UTIL_INV_SLOT_10",
+            "name_en": "Gold Sword",
+      "name_cn": "金剑",
+            "type": "virtual_good",
+            "description": {
+                "en": "Permanently increases your inventory capacity by 10 slots. Never leave loot behind again!"
+            },
+            "image_url": "https:\/\/static.xsolla.com\/misc\/publisher_account\/virtual_item_default_image.png",
+            "long_description": null,
+            "attributes": [],
+            "is_free": false,
+            "order": 1,
+            "groups": [],
+            "regional_prices": [],
+            "prices": [
+                {
+                    "amount": 7.99,
+                    "currency": "USD",
+                    "is_default": true,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1050,
+                    "currency": "DZD",
+                    "country_iso": "DZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 11.99,
+                    "currency": "AUD",
+                    "country_iso": "AU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "EUR",
+                    "country_iso": "AT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 8.99,
+                    "currency": "USD",
+                    "country_iso": "BH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1100,
+                    "currency": "BDT",
+                    "country_iso": "BD",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "EUR",
+                    "country_iso": "BE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "USD",
+                    "country_iso": "BM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 54.99,
+                    "currency": "BOB",
+                    "country_iso": "BO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 39.99,
+                    "currency": "BRL",
+                    "country_iso": "BR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "USD",
+                    "country_iso": "VG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "EUR",
+                    "country_iso": "BG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "USD",
+                    "country_iso": "KH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 5300,
+                    "currency": "XAF",
+                    "country_iso": "CM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 10.99,
+                    "currency": "CAD",
+                    "country_iso": "CA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 8300,
+                    "currency": "CLP",
+                    "country_iso": "CL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 28500,
+                    "currency": "COP",
+                    "country_iso": "CO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 3600,
+                    "currency": "CRC",
+                    "country_iso": "CR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 5300,
+                    "currency": "XOF",
+                    "country_iso": "CI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 8.49,
+                    "currency": "EUR",
+                    "country_iso": "HR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "EUR",
+                    "country_iso": "CY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 199.99,
+                    "currency": "CZK",
+                    "country_iso": "CZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 65,
+                    "currency": "DKK",
+                    "country_iso": "DK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "USD",
+                    "country_iso": "EC",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 469.99,
+                    "currency": "EGP",
+                    "country_iso": "EG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "USD",
+                    "country_iso": "SV",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 8.49,
+                    "currency": "EUR",
+                    "country_iso": "EE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 8.49,
+                    "currency": "EUR",
+                    "country_iso": "FI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "EUR",
+                    "country_iso": "FR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 24,
+                    "currency": "GEL",
+                    "country_iso": "GE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "EUR",
+                    "country_iso": "DE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 110,
+                    "currency": "GHS",
+                    "country_iso": "GH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 5.99,
+                    "currency": "GBP",
+                    "country_iso": "GI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 8.49,
+                    "currency": "EUR",
+                    "country_iso": "GR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 60.9,
+                    "currency": "HKD",
+                    "country_iso": "HK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 3099,
+                    "currency": "HUF",
+                    "country_iso": "HU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 890,
+                    "currency": "INR",
+                    "country_iso": "IN",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 139000,
+                    "currency": "IDR",
+                    "country_iso": "ID",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 10450,
+                    "currency": "IQD",
+                    "country_iso": "IQ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 8.49,
+                    "currency": "EUR",
+                    "country_iso": "IE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 23.9,
+                    "currency": "ILS",
+                    "country_iso": "IL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 8.49,
+                    "currency": "EUR",
+                    "country_iso": "IT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1390,
+                    "currency": "JPY",
+                    "country_iso": "JP",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 5.65,
+                    "currency": "JOD",
+                    "country_iso": "JO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4390,
+                    "currency": "KZT",
+                    "country_iso": "KZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1200,
+                    "currency": "KES",
+                    "country_iso": "KE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "USD",
+                    "country_iso": "KW",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "EUR",
+                    "country_iso": "LV",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 6.8,
+                    "currency": "CHF",
+                    "country_iso": "LI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "EUR",
+                    "country_iso": "LT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "EUR",
+                    "country_iso": "LU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 64.88,
+                    "currency": "MOP",
+                    "country_iso": "MO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 33.99,
+                    "currency": "MYR",
+                    "country_iso": "MY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 159,
+                    "currency": "MXN",
+                    "country_iso": "MX",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "EUR",
+                    "country_iso": "MC",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 87.99,
+                    "currency": "MAD",
+                    "country_iso": "MA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 17000,
+                    "currency": "MMK",
+                    "country_iso": "MM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "EUR",
+                    "country_iso": "NL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 15.99,
+                    "currency": "NZD",
+                    "country_iso": "NZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 11500,
+                    "currency": "NGN",
+                    "country_iso": "NG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 95,
+                    "currency": "NOK",
+                    "country_iso": "NO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 8.49,
+                    "currency": "USD",
+                    "country_iso": "OM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2250,
+                    "currency": "PKR",
+                    "country_iso": "PK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "USD",
+                    "country_iso": "PA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 50000,
+                    "currency": "PYG",
+                    "country_iso": "PY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 26.99,
+                    "currency": "PEN",
+                    "country_iso": "PE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 539,
+                    "currency": "PHP",
+                    "country_iso": "PH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 34.99,
+                    "currency": "PLN",
+                    "country_iso": "PL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 8.49,
+                    "currency": "EUR",
+                    "country_iso": "PT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 29,
+                    "currency": "QAR",
+                    "country_iso": "QA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 41.99,
+                    "currency": "RON",
+                    "country_iso": "RO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 599,
+                    "currency": "RUB",
+                    "country_iso": "RU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 6.99,
+                    "currency": "EUR",
+                    "country_iso": "SM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 33.99,
+                    "currency": "SAR",
+                    "country_iso": "SA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 5300,
+                    "currency": "XOF",
+                    "country_iso": "SN",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 949,
+                    "currency": "RSD",
+                    "country_iso": "RS",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 10.99,
+                    "currency": "SGD",
+                    "country_iso": "SG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 8.49,
+                    "currency": "EUR",
+                    "country_iso": "SK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 8.49,
+                    "currency": "EUR",
+                    "country_iso": "SI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 149.99,
+                    "currency": "ZAR",
+                    "country_iso": "ZA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 13000,
+                    "currency": "KRW",
+                    "country_iso": "KR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "EUR",
+                    "country_iso": "ES",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2525,
+                    "currency": "LKR",
+                    "country_iso": "LK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 89,
+                    "currency": "SEK",
+                    "country_iso": "SE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 6.2,
+                    "currency": "CHF",
+                    "country_iso": "CH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 260,
+                    "currency": "TWD",
+                    "country_iso": "TW",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 21000,
+                    "currency": "TZS",
+                    "country_iso": "TZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 275,
+                    "currency": "THB",
+                    "country_iso": "TH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "USD",
+                    "country_iso": "KY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "USD",
+                    "country_iso": "FM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "USD",
+                    "country_iso": "TC",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 429.99,
+                    "currency": "TRY",
+                    "country_iso": "TR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 30.99,
+                    "currency": "AED",
+                    "country_iso": "AE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 419.99,
+                    "currency": "UAH",
+                    "country_iso": "UA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 6.99,
+                    "currency": "GBP",
+                    "country_iso": "GB",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "USD",
+                    "country_iso": "US",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 6.99,
+                    "currency": "EUR",
+                    "country_iso": "VA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 210000,
+                    "currency": "VND",
+                    "country_iso": "VN",
+                    "is_default": false,
+                    "is_enabled": true
+                }
+            ],
+            "media_list": [],
+            "vc_prices": [],
+            "is_enabled": true,
+            "is_show_in_store": true,
+            "regions": [],
+            "limits": {
+                "per_user": {
+                    "total": 5,
+                    "limit_exceeded_visibility": "hide"
+                },
+                "per_item": null,
+                "recurrent_schedule": null
+            },
+            "periods": [],
+            "custom_attributes": {
+                "action": "expand_inventory",
+                "item_type": "utility",
+                "permanent": true,
+                "slots_added": 10,
+                "max_allowed_upgrades": 5
+            },
+            "inventory_options": {
+                "consumable": true,
+                "expiration_period": null
+            },
+            "is_paid_randomized_reward": false
+        },
+        {
+            "item_id": 1367692,
+            "sku": "EMOTE_FIREWORKS_BNDL",
+            "name-en": "Fireworks Emote Bundle",
+            "name-cn": "烟花表情包",
+            "type": "virtual_good",
+            "description": {
+                "en": "Celebrate your victories! Unleash a spectacular firework display that other players can see. Includes 5 different color variations."
+            },
+            "image_url": "https:\/\/static.xsolla.com\/misc\/publisher_account\/virtual_item_default_image.png",
+            "long_description": null,
+            "attributes": [],
+            "is_free": false,
+            "order": 1,
+            "groups": [],
+            "regional_prices": [],
+            "prices": [
+                {
+                    "amount": 4.99,
+                    "currency": "USD",
+                    "is_default": true,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 650,
+                    "currency": "DZD",
+                    "country_iso": "DZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.49,
+                    "currency": "AUD",
+                    "country_iso": "AU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "EUR",
+                    "country_iso": "AT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 5.49,
+                    "currency": "USD",
+                    "country_iso": "BH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 700,
+                    "currency": "BDT",
+                    "country_iso": "BD",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "EUR",
+                    "country_iso": "BE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "USD",
+                    "country_iso": "BM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 33.99,
+                    "currency": "BOB",
+                    "country_iso": "BO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 24.99,
+                    "currency": "BRL",
+                    "country_iso": "BR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "USD",
+                    "country_iso": "VG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "EUR",
+                    "country_iso": "BG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "USD",
+                    "country_iso": "KH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 3300,
+                    "currency": "XAF",
+                    "country_iso": "CM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 6.99,
+                    "currency": "CAD",
+                    "country_iso": "CA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 5200,
+                    "currency": "CLP",
+                    "country_iso": "CL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 18000,
+                    "currency": "COP",
+                    "country_iso": "CO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2300,
+                    "currency": "CRC",
+                    "country_iso": "CR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 3300,
+                    "currency": "XOF",
+                    "country_iso": "CI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 5.49,
+                    "currency": "EUR",
+                    "country_iso": "HR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "EUR",
+                    "country_iso": "CY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 119.99,
+                    "currency": "CZK",
+                    "country_iso": "CZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 40,
+                    "currency": "DKK",
+                    "country_iso": "DK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "USD",
+                    "country_iso": "EC",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 289.99,
+                    "currency": "EGP",
+                    "country_iso": "EG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "USD",
+                    "country_iso": "SV",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 5.49,
+                    "currency": "EUR",
+                    "country_iso": "EE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 5.49,
+                    "currency": "EUR",
+                    "country_iso": "FI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "EUR",
+                    "country_iso": "FR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14,
+                    "currency": "GEL",
+                    "country_iso": "GE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "EUR",
+                    "country_iso": "DE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 65,
+                    "currency": "GHS",
+                    "country_iso": "GH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 3.69,
+                    "currency": "GBP",
+                    "country_iso": "GI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 5.49,
+                    "currency": "EUR",
+                    "country_iso": "GR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 39.9,
+                    "currency": "HKD",
+                    "country_iso": "HK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1990,
+                    "currency": "HUF",
+                    "country_iso": "HU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 550,
+                    "currency": "INR",
+                    "country_iso": "IN",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 86000,
+                    "currency": "IDR",
+                    "country_iso": "ID",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 6550,
+                    "currency": "IQD",
+                    "country_iso": "IQ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "EUR",
+                    "country_iso": "IE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.9,
+                    "currency": "ILS",
+                    "country_iso": "IL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "EUR",
+                    "country_iso": "IT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 880,
+                    "currency": "JPY",
+                    "country_iso": "JP",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 3.55,
+                    "currency": "JOD",
+                    "country_iso": "JO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2690,
+                    "currency": "KZT",
+                    "country_iso": "KZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 700,
+                    "currency": "KES",
+                    "country_iso": "KE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "USD",
+                    "country_iso": "KW",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "EUR",
+                    "country_iso": "LV",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.2,
+                    "currency": "CHF",
+                    "country_iso": "LI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "EUR",
+                    "country_iso": "LT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "EUR",
+                    "country_iso": "LU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 39.99,
+                    "currency": "MOP",
+                    "country_iso": "MO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 20.99,
+                    "currency": "MYR",
+                    "country_iso": "MY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 99,
+                    "currency": "MXN",
+                    "country_iso": "MX",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "EUR",
+                    "country_iso": "MC",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 54.99,
+                    "currency": "MAD",
+                    "country_iso": "MA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 10000,
+                    "currency": "MMK",
+                    "country_iso": "MM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "EUR",
+                    "country_iso": "NL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "NZD",
+                    "country_iso": "NZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7200,
+                    "currency": "NGN",
+                    "country_iso": "NG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 59,
+                    "currency": "NOK",
+                    "country_iso": "NO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "USD",
+                    "country_iso": "OM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1400,
+                    "currency": "PKR",
+                    "country_iso": "PK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "USD",
+                    "country_iso": "PA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 30000,
+                    "currency": "PYG",
+                    "country_iso": "PY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 16.99,
+                    "currency": "PEN",
+                    "country_iso": "PE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 335,
+                    "currency": "PHP",
+                    "country_iso": "PH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 21.99,
+                    "currency": "PLN",
+                    "country_iso": "PL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "EUR",
+                    "country_iso": "PT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 18,
+                    "currency": "QAR",
+                    "country_iso": "QA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 25.99,
+                    "currency": "RON",
+                    "country_iso": "RO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 379,
+                    "currency": "RUB",
+                    "country_iso": "RU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.19,
+                    "currency": "EUR",
+                    "country_iso": "SM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 21.99,
+                    "currency": "SAR",
+                    "country_iso": "SA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 3300,
+                    "currency": "XOF",
+                    "country_iso": "SN",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 599,
+                    "currency": "RSD",
+                    "country_iso": "RS",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 6.98,
+                    "currency": "SGD",
+                    "country_iso": "SG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "EUR",
+                    "country_iso": "SK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "EUR",
+                    "country_iso": "SI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 93.99,
+                    "currency": "ZAR",
+                    "country_iso": "ZA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 8000,
+                    "currency": "KRW",
+                    "country_iso": "KR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "EUR",
+                    "country_iso": "ES",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1575,
+                    "currency": "LKR",
+                    "country_iso": "LK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 59,
+                    "currency": "SEK",
+                    "country_iso": "SE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 3.9,
+                    "currency": "CHF",
+                    "country_iso": "CH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 170,
+                    "currency": "TWD",
+                    "country_iso": "TW",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 13000,
+                    "currency": "TZS",
+                    "country_iso": "TZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 175,
+                    "currency": "THB",
+                    "country_iso": "TH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "USD",
+                    "country_iso": "KY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "USD",
+                    "country_iso": "FM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "USD",
+                    "country_iso": "TC",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 269.99,
+                    "currency": "TRY",
+                    "country_iso": "TR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 18.99,
+                    "currency": "AED",
+                    "country_iso": "AE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 264.99,
+                    "currency": "UAH",
+                    "country_iso": "UA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.39,
+                    "currency": "GBP",
+                    "country_iso": "GB",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "USD",
+                    "country_iso": "US",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.19,
+                    "currency": "EUR",
+                    "country_iso": "VA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 131000,
+                    "currency": "VND",
+                    "country_iso": "VN",
+                    "is_default": false,
+                    "is_enabled": true
+                }
+            ],
+            "media_list": [],
+            "vc_prices": [],
+            "is_enabled": true,
+            "is_show_in_store": true,
+            "regions": [],
+            "limits": {
+                "per_user": null,
+                "per_item": null,
+                "recurrent_schedule": null
+            },
+            "periods": [],
+            "custom_attributes": {
+                "radius": 20,
+                "charges": 5,
+                "effect_id": "fireworks_multi",
+                "item_type": "emote",
+                "sound_profile": "explosive_festive"
+            },
+            "inventory_options": {
+                "consumable": true,
+                "expiration_period": null
+            },
+            "is_paid_randomized_reward": false
+        },
+        {
+            "item_id": 1367691,
+            "sku": "MOUNT_HOVER_01",
+            "name-en": "Spectral Hoverboard",
+            "name-cn": "幽灵滑板",
+            "type": "virtual_good",
+            "description": {
+                "en": "Glide across the map with 40% increased movement speed. Features a neon-blue light trail that illuminates dark areas."
+            },
+            "image_url": "https:\/\/static.xsolla.com\/misc\/publisher_account\/virtual_item_default_image.png",
+            "long_description": null,
+            "attributes": [],
+            "is_free": false,
+            "order": 1,
+            "groups": [],
+            "regional_prices": [],
+            "prices": [
+                {
+                    "amount": 14.99,
+                    "currency": "USD",
+                    "is_default": true,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1975,
+                    "currency": "DZD",
+                    "country_iso": "DZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 22.99,
+                    "currency": "AUD",
+                    "country_iso": "AU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "EUR",
+                    "country_iso": "AT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 15.99,
+                    "currency": "USD",
+                    "country_iso": "BH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2100,
+                    "currency": "BDT",
+                    "country_iso": "BD",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "EUR",
+                    "country_iso": "BE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "USD",
+                    "country_iso": "BM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 104.99,
+                    "currency": "BOB",
+                    "country_iso": "BO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 74.99,
+                    "currency": "BRL",
+                    "country_iso": "BR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "USD",
+                    "country_iso": "VG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "EUR",
+                    "country_iso": "BG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "USD",
+                    "country_iso": "KH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 10000,
+                    "currency": "XAF",
+                    "country_iso": "CM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 20.99,
+                    "currency": "CAD",
+                    "country_iso": "CA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 15600,
+                    "currency": "CLP",
+                    "country_iso": "CL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 54000,
+                    "currency": "COP",
+                    "country_iso": "CO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 6800,
+                    "currency": "CRC",
+                    "country_iso": "CR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9900,
+                    "currency": "XOF",
+                    "country_iso": "CI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 15.99,
+                    "currency": "EUR",
+                    "country_iso": "HR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "EUR",
+                    "country_iso": "CY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 369.99,
+                    "currency": "CZK",
+                    "country_iso": "CZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 119,
+                    "currency": "DKK",
+                    "country_iso": "DK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "USD",
+                    "country_iso": "EC",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 889.99,
+                    "currency": "EGP",
+                    "country_iso": "EG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "USD",
+                    "country_iso": "SV",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 15.99,
+                    "currency": "EUR",
+                    "country_iso": "EE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 15.99,
+                    "currency": "EUR",
+                    "country_iso": "FI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "EUR",
+                    "country_iso": "FR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 49,
+                    "currency": "GEL",
+                    "country_iso": "GE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "EUR",
+                    "country_iso": "DE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 200,
+                    "currency": "GHS",
+                    "country_iso": "GH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 10.99,
+                    "currency": "GBP",
+                    "country_iso": "GI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 15.99,
+                    "currency": "EUR",
+                    "country_iso": "GR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 118,
+                    "currency": "HKD",
+                    "country_iso": "HK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 5890,
+                    "currency": "HUF",
+                    "country_iso": "HU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1650,
+                    "currency": "INR",
+                    "country_iso": "IN",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 259000,
+                    "currency": "IDR",
+                    "country_iso": "ID",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 19650,
+                    "currency": "IQD",
+                    "country_iso": "IQ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 15.99,
+                    "currency": "EUR",
+                    "country_iso": "IE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 44.9,
+                    "currency": "ILS",
+                    "country_iso": "IL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 15.99,
+                    "currency": "EUR",
+                    "country_iso": "IT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2620,
+                    "currency": "JPY",
+                    "country_iso": "JP",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 10.6,
+                    "currency": "JOD",
+                    "country_iso": "JO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 8190,
+                    "currency": "KZT",
+                    "country_iso": "KZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2200,
+                    "currency": "KES",
+                    "country_iso": "KE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "USD",
+                    "country_iso": "KW",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "EUR",
+                    "country_iso": "LV",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 13,
+                    "currency": "CHF",
+                    "country_iso": "LI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "EUR",
+                    "country_iso": "LT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "EUR",
+                    "country_iso": "LU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 119,
+                    "currency": "MOP",
+                    "country_iso": "MO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 63.99,
+                    "currency": "MYR",
+                    "country_iso": "MY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 299,
+                    "currency": "MXN",
+                    "country_iso": "MX",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "EUR",
+                    "country_iso": "MC",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 164.99,
+                    "currency": "MAD",
+                    "country_iso": "MA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 32000,
+                    "currency": "MMK",
+                    "country_iso": "MM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "EUR",
+                    "country_iso": "NL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 28.99,
+                    "currency": "NZD",
+                    "country_iso": "NZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 21500,
+                    "currency": "NGN",
+                    "country_iso": "NG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 175,
+                    "currency": "NOK",
+                    "country_iso": "NO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 15.99,
+                    "currency": "USD",
+                    "country_iso": "OM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4200,
+                    "currency": "PKR",
+                    "country_iso": "PK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "USD",
+                    "country_iso": "PA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 100000,
+                    "currency": "PYG",
+                    "country_iso": "PY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 50.99,
+                    "currency": "PEN",
+                    "country_iso": "PE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1000,
+                    "currency": "PHP",
+                    "country_iso": "PH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 65.99,
+                    "currency": "PLN",
+                    "country_iso": "PL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 15.99,
+                    "currency": "EUR",
+                    "country_iso": "PT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 55,
+                    "currency": "QAR",
+                    "country_iso": "QA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 79.99,
+                    "currency": "RON",
+                    "country_iso": "RO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1099,
+                    "currency": "RUB",
+                    "country_iso": "RU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 12.99,
+                    "currency": "EUR",
+                    "country_iso": "SM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 64.99,
+                    "currency": "SAR",
+                    "country_iso": "SA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9900,
+                    "currency": "XOF",
+                    "country_iso": "SN",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1799,
+                    "currency": "RSD",
+                    "country_iso": "RS",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 20.98,
+                    "currency": "SGD",
+                    "country_iso": "SG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 15.99,
+                    "currency": "EUR",
+                    "country_iso": "SK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 15.99,
+                    "currency": "EUR",
+                    "country_iso": "SI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 279.99,
+                    "currency": "ZAR",
+                    "country_iso": "ZA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 24000,
+                    "currency": "KRW",
+                    "country_iso": "KR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "EUR",
+                    "country_iso": "ES",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4725,
+                    "currency": "LKR",
+                    "country_iso": "LK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 169,
+                    "currency": "SEK",
+                    "country_iso": "SE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 12,
+                    "currency": "CHF",
+                    "country_iso": "CH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 500,
+                    "currency": "TWD",
+                    "country_iso": "TW",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 39000,
+                    "currency": "TZS",
+                    "country_iso": "TZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 500,
+                    "currency": "THB",
+                    "country_iso": "TH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "USD",
+                    "country_iso": "KY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "USD",
+                    "country_iso": "FM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "USD",
+                    "country_iso": "TC",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 809.99,
+                    "currency": "TRY",
+                    "country_iso": "TR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 57.99,
+                    "currency": "AED",
+                    "country_iso": "AE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 789.99,
+                    "currency": "UAH",
+                    "country_iso": "UA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 13.49,
+                    "currency": "GBP",
+                    "country_iso": "GB",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "USD",
+                    "country_iso": "US",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 12.99,
+                    "currency": "EUR",
+                    "country_iso": "VA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 395000,
+                    "currency": "VND",
+                    "country_iso": "VN",
+                    "is_default": false,
+                    "is_enabled": true
+                }
+            ],
+            "media_list": [],
+            "vc_prices": [],
+            "is_enabled": true,
+            "is_show_in_store": true,
+            "regions": [],
+            "limits": {
+                "per_user": {
+                    "total": 1,
+                    "limit_exceeded_visibility": "hide"
+                },
+                "per_item": null,
+                "recurrent_schedule": null
+            },
+            "periods": [],
+            "custom_attributes": {
+                "rarity": "epic",
+                "item_type": "mount",
+                "trail_color": "#00f2ff",
+                "light_radius": 5,
+                "speed_bonus_pct": 40
+            },
+            "inventory_options": {
+                "consumable": true,
+                "expiration_period": null
+            },
+            "is_paid_randomized_reward": false
+        },
+        {
+            "item_id": 1367689,
+            "sku": "BOOST_XP_30MIN",
+            "name-en": "2x XP Star Token",
+            "name-cn": "双倍经验星币",
+            "type": "virtual_good",
+            "description": {
+                "en": "Grants double experience points for all activities for 30 minutes. Timer only ticks down while you are logged in."
+            },
+            "image_url": "https:\/\/static.xsolla.com\/misc\/publisher_account\/virtual_item_default_image.png",
+            "long_description": null,
+            "attributes": [],
+            "is_free": false,
+            "order": 1,
+            "groups": [],
+            "regional_prices": [],
+            "prices": [
+                {
+                    "amount": 2.5,
+                    "currency": "USD",
+                    "is_default": true,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 325,
+                    "currency": "DZD",
+                    "country_iso": "DZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 3.79,
+                    "currency": "AUD",
+                    "country_iso": "AU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.59,
+                    "currency": "EUR",
+                    "country_iso": "AT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.99,
+                    "currency": "USD",
+                    "country_iso": "BH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 350,
+                    "currency": "BDT",
+                    "country_iso": "BD",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.59,
+                    "currency": "EUR",
+                    "country_iso": "BE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.49,
+                    "currency": "USD",
+                    "country_iso": "BM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 16.99,
+                    "currency": "BOB",
+                    "country_iso": "BO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 11.99,
+                    "currency": "BRL",
+                    "country_iso": "BR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.49,
+                    "currency": "USD",
+                    "country_iso": "VG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.59,
+                    "currency": "EUR",
+                    "country_iso": "BG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.49,
+                    "currency": "USD",
+                    "country_iso": "KH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1700,
+                    "currency": "XAF",
+                    "country_iso": "CM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 3.39,
+                    "currency": "CAD",
+                    "country_iso": "CA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2600,
+                    "currency": "CLP",
+                    "country_iso": "CL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9000,
+                    "currency": "COP",
+                    "country_iso": "CO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1100,
+                    "currency": "CRC",
+                    "country_iso": "CR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1600,
+                    "currency": "XOF",
+                    "country_iso": "CI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.69,
+                    "currency": "EUR",
+                    "country_iso": "HR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.49,
+                    "currency": "EUR",
+                    "country_iso": "CY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 59.99,
+                    "currency": "CZK",
+                    "country_iso": "CZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 20,
+                    "currency": "DKK",
+                    "country_iso": "DK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.49,
+                    "currency": "USD",
+                    "country_iso": "EC",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 149.99,
+                    "currency": "EGP",
+                    "country_iso": "EG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.49,
+                    "currency": "USD",
+                    "country_iso": "SV",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.59,
+                    "currency": "EUR",
+                    "country_iso": "EE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.69,
+                    "currency": "EUR",
+                    "country_iso": "FI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.59,
+                    "currency": "EUR",
+                    "country_iso": "FR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 8,
+                    "currency": "GEL",
+                    "country_iso": "GE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.49,
+                    "currency": "EUR",
+                    "country_iso": "DE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 35,
+                    "currency": "GHS",
+                    "country_iso": "GH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1.89,
+                    "currency": "GBP",
+                    "country_iso": "GI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.59,
+                    "currency": "EUR",
+                    "country_iso": "GR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 19.9,
+                    "currency": "HKD",
+                    "country_iso": "HK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 990,
+                    "currency": "HUF",
+                    "country_iso": "HU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 270,
+                    "currency": "INR",
+                    "country_iso": "IN",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 43000,
+                    "currency": "IDR",
+                    "country_iso": "ID",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 3250,
+                    "currency": "IQD",
+                    "country_iso": "IQ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.59,
+                    "currency": "EUR",
+                    "country_iso": "IE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.4,
+                    "currency": "ILS",
+                    "country_iso": "IL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.59,
+                    "currency": "EUR",
+                    "country_iso": "IT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 440,
+                    "currency": "JPY",
+                    "country_iso": "JP",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1.75,
+                    "currency": "JOD",
+                    "country_iso": "JO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1390,
+                    "currency": "KZT",
+                    "country_iso": "KZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 400,
+                    "currency": "KES",
+                    "country_iso": "KE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.49,
+                    "currency": "USD",
+                    "country_iso": "KW",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.59,
+                    "currency": "EUR",
+                    "country_iso": "LV",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.1,
+                    "currency": "CHF",
+                    "country_iso": "LI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.59,
+                    "currency": "EUR",
+                    "country_iso": "LT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.49,
+                    "currency": "EUR",
+                    "country_iso": "LU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 19.99,
+                    "currency": "MOP",
+                    "country_iso": "MO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 10.99,
+                    "currency": "MYR",
+                    "country_iso": "MY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 49,
+                    "currency": "MXN",
+                    "country_iso": "MX",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.59,
+                    "currency": "EUR",
+                    "country_iso": "MC",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 27.99,
+                    "currency": "MAD",
+                    "country_iso": "MA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 5000,
+                    "currency": "MMK",
+                    "country_iso": "MM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.59,
+                    "currency": "EUR",
+                    "country_iso": "NL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.89,
+                    "currency": "NZD",
+                    "country_iso": "NZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 3610,
+                    "currency": "NGN",
+                    "country_iso": "NG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 29,
+                    "currency": "NOK",
+                    "country_iso": "NO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.49,
+                    "currency": "USD",
+                    "country_iso": "OM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 700,
+                    "currency": "PKR",
+                    "country_iso": "PK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.49,
+                    "currency": "USD",
+                    "country_iso": "PA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 20000,
+                    "currency": "PYG",
+                    "country_iso": "PY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 8.49,
+                    "currency": "PEN",
+                    "country_iso": "PE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 169,
+                    "currency": "PHP",
+                    "country_iso": "PH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 10.99,
+                    "currency": "PLN",
+                    "country_iso": "PL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.59,
+                    "currency": "EUR",
+                    "country_iso": "PT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9,
+                    "currency": "QAR",
+                    "country_iso": "QA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 12.99,
+                    "currency": "RON",
+                    "country_iso": "RO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 189,
+                    "currency": "RUB",
+                    "country_iso": "RU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.09,
+                    "currency": "EUR",
+                    "country_iso": "SM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 10.99,
+                    "currency": "SAR",
+                    "country_iso": "SA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1600,
+                    "currency": "XOF",
+                    "country_iso": "SN",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 299,
+                    "currency": "RSD",
+                    "country_iso": "RS",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 3.48,
+                    "currency": "SGD",
+                    "country_iso": "SG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.59,
+                    "currency": "EUR",
+                    "country_iso": "SK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.59,
+                    "currency": "EUR",
+                    "country_iso": "SI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 46.99,
+                    "currency": "ZAR",
+                    "country_iso": "ZA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4000,
+                    "currency": "KRW",
+                    "country_iso": "KR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.59,
+                    "currency": "EUR",
+                    "country_iso": "ES",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 800,
+                    "currency": "LKR",
+                    "country_iso": "LK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 29,
+                    "currency": "SEK",
+                    "country_iso": "SE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1.9,
+                    "currency": "CHF",
+                    "country_iso": "CH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 83,
+                    "currency": "TWD",
+                    "country_iso": "TW",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 6500,
+                    "currency": "TZS",
+                    "country_iso": "TZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 85,
+                    "currency": "THB",
+                    "country_iso": "TH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.49,
+                    "currency": "USD",
+                    "country_iso": "KY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.49,
+                    "currency": "USD",
+                    "country_iso": "FM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.49,
+                    "currency": "USD",
+                    "country_iso": "TC",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 134.99,
+                    "currency": "TRY",
+                    "country_iso": "TR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.59,
+                    "currency": "AED",
+                    "country_iso": "AE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 129.99,
+                    "currency": "UAH",
+                    "country_iso": "UA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.19,
+                    "currency": "GBP",
+                    "country_iso": "GB",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.49,
+                    "currency": "USD",
+                    "country_iso": "US",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.09,
+                    "currency": "EUR",
+                    "country_iso": "VA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 66000,
+                    "currency": "VND",
+                    "country_iso": "VN",
+                    "is_default": false,
+                    "is_enabled": true
+                }
+            ],
+            "media_list": [],
+            "vc_prices": [],
+            "is_enabled": true,
+            "is_show_in_store": true,
+            "regions": [],
+            "limits": {
+                "per_user": null,
+                "per_item": null,
+                "recurrent_schedule": null
+            },
+            "periods": [],
+            "custom_attributes": {
+                "item_type": "booster",
+                "boost_type": "xp",
+                "multiplier": 2,
+                "duration_min": 30,
+                "auto_activate": false
+            },
+            "inventory_options": {
+                "consumable": true,
+                "expiration_period": null
+            },
+            "is_paid_randomized_reward": false
+        },
+        {
+            "item_id": 1367688,
+            "sku": "CONS_POTION_MANA_LRG",
+            "name-en": "Mystic Mana Potion",
+            "name-cn": "神秘法力药水",
+            "type": "virtual_good",
+            "description": {
+                "en": "Instantly restores 50% of your mana pool. Perfect for long dungeon raids. Can be used from the quick-slot menu."
+            },
+            "image_url": "https:\/\/static.xsolla.com\/misc\/publisher_account\/virtual_item_default_image.png",
+            "long_description": null,
+            "attributes": [],
+            "is_free": false,
+            "order": 1,
+            "groups": [],
+            "regional_prices": [],
+            "prices": [
+                {
+                    "amount": 0.99,
+                    "currency": "USD",
+                    "is_default": true,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 125,
+                    "currency": "DZD",
+                    "country_iso": "DZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1.49,
+                    "currency": "AUD",
+                    "country_iso": "AU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "EUR",
+                    "country_iso": "AT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "USD",
+                    "country_iso": "BH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 150,
+                    "currency": "BDT",
+                    "country_iso": "BD",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "EUR",
+                    "country_iso": "BE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "USD",
+                    "country_iso": "BM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 6.99,
+                    "currency": "BOB",
+                    "country_iso": "BO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.89,
+                    "currency": "BRL",
+                    "country_iso": "BR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "USD",
+                    "country_iso": "VG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "EUR",
+                    "country_iso": "BG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "USD",
+                    "country_iso": "KH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 650,
+                    "currency": "XAF",
+                    "country_iso": "CM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1.39,
+                    "currency": "CAD",
+                    "country_iso": "CA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1000,
+                    "currency": "CLP",
+                    "country_iso": "CL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 3500,
+                    "currency": "COP",
+                    "country_iso": "CO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 450,
+                    "currency": "CRC",
+                    "country_iso": "CR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 650,
+                    "currency": "XOF",
+                    "country_iso": "CI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1.09,
+                    "currency": "EUR",
+                    "country_iso": "HR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "EUR",
+                    "country_iso": "CY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 24.99,
+                    "currency": "CZK",
+                    "country_iso": "CZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 8,
+                    "currency": "DKK",
+                    "country_iso": "DK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "USD",
+                    "country_iso": "EC",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 57.99,
+                    "currency": "EGP",
+                    "country_iso": "EG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "USD",
+                    "country_iso": "SV",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "EUR",
+                    "country_iso": "EE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1.09,
+                    "currency": "EUR",
+                    "country_iso": "FI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "EUR",
+                    "country_iso": "FR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 3,
+                    "currency": "GEL",
+                    "country_iso": "GE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "EUR",
+                    "country_iso": "DE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 15,
+                    "currency": "GHS",
+                    "country_iso": "GH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.69,
+                    "currency": "GBP",
+                    "country_iso": "GI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "EUR",
+                    "country_iso": "GR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 8,
+                    "currency": "HKD",
+                    "country_iso": "HK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 389,
+                    "currency": "HUF",
+                    "country_iso": "HU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 110,
+                    "currency": "INR",
+                    "country_iso": "IN",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 17000,
+                    "currency": "IDR",
+                    "country_iso": "ID",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1300,
+                    "currency": "IQD",
+                    "country_iso": "IQ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "EUR",
+                    "country_iso": "IE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2.9,
+                    "currency": "ILS",
+                    "country_iso": "IL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "EUR",
+                    "country_iso": "IT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 170,
+                    "currency": "JPY",
+                    "country_iso": "JP",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.7,
+                    "currency": "JOD",
+                    "country_iso": "JO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 590,
+                    "currency": "KZT",
+                    "country_iso": "KZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 100,
+                    "currency": "KES",
+                    "country_iso": "KE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "USD",
+                    "country_iso": "KW",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "EUR",
+                    "country_iso": "LV",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.8,
+                    "currency": "CHF",
+                    "country_iso": "LI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "EUR",
+                    "country_iso": "LT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "EUR",
+                    "country_iso": "LU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.99,
+                    "currency": "MOP",
+                    "country_iso": "MO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 3.99,
+                    "currency": "MYR",
+                    "country_iso": "MY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 20,
+                    "currency": "MXN",
+                    "country_iso": "MX",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "EUR",
+                    "country_iso": "MC",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 10.99,
+                    "currency": "MAD",
+                    "country_iso": "MA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2000,
+                    "currency": "MMK",
+                    "country_iso": "MM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "EUR",
+                    "country_iso": "NL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1.89,
+                    "currency": "NZD",
+                    "country_iso": "NZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1430,
+                    "currency": "NGN",
+                    "country_iso": "NG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 12,
+                    "currency": "NOK",
+                    "country_iso": "NO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "USD",
+                    "country_iso": "OM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 280,
+                    "currency": "PKR",
+                    "country_iso": "PK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "USD",
+                    "country_iso": "PA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 5000,
+                    "currency": "PYG",
+                    "country_iso": "PY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 3.39,
+                    "currency": "PEN",
+                    "country_iso": "PE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 67,
+                    "currency": "PHP",
+                    "country_iso": "PH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.39,
+                    "currency": "PLN",
+                    "country_iso": "PL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "EUR",
+                    "country_iso": "PT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 3.5,
+                    "currency": "QAR",
+                    "country_iso": "QA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.99,
+                    "currency": "RON",
+                    "country_iso": "RO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 75,
+                    "currency": "RUB",
+                    "country_iso": "RU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.79,
+                    "currency": "EUR",
+                    "country_iso": "SM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4.29,
+                    "currency": "SAR",
+                    "country_iso": "SA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 650,
+                    "currency": "XOF",
+                    "country_iso": "SN",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 99,
+                    "currency": "RSD",
+                    "country_iso": "RS",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1.48,
+                    "currency": "SGD",
+                    "country_iso": "SG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "EUR",
+                    "country_iso": "SK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "EUR",
+                    "country_iso": "SI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 18.99,
+                    "currency": "ZAR",
+                    "country_iso": "ZA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1600,
+                    "currency": "KRW",
+                    "country_iso": "KR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "EUR",
+                    "country_iso": "ES",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 325,
+                    "currency": "LKR",
+                    "country_iso": "LK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 11,
+                    "currency": "SEK",
+                    "country_iso": "SE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.8,
+                    "currency": "CHF",
+                    "country_iso": "CH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 33,
+                    "currency": "TWD",
+                    "country_iso": "TW",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2600,
+                    "currency": "TZS",
+                    "country_iso": "TZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 34,
+                    "currency": "THB",
+                    "country_iso": "TH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "USD",
+                    "country_iso": "KY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "USD",
+                    "country_iso": "FM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "USD",
+                    "country_iso": "TC",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 52.99,
+                    "currency": "TRY",
+                    "country_iso": "TR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 3.79,
+                    "currency": "AED",
+                    "country_iso": "AE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 49.99,
+                    "currency": "UAH",
+                    "country_iso": "UA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.89,
+                    "currency": "GBP",
+                    "country_iso": "GB",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.99,
+                    "currency": "USD",
+                    "country_iso": "US",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 0.79,
+                    "currency": "EUR",
+                    "country_iso": "VA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 26000,
+                    "currency": "VND",
+                    "country_iso": "VN",
+                    "is_default": false,
+                    "is_enabled": true
+                }
+            ],
+            "media_list": [],
+            "vc_prices": [],
+            "is_enabled": true,
+            "is_show_in_store": true,
+            "regions": [],
+            "limits": {
+                "per_user": null,
+                "per_item": null,
+                "recurrent_schedule": null
+            },
+            "periods": [],
+            "custom_attributes": {
+                "item_type": "consumable",
+                "stat_type": "mana",
+                "restore_pct": 50,
+                "cooldown_sec": 10,
+                "is_stackable": true
+            },
+            "inventory_options": {
+                "consumable": true,
+                "expiration_period": null
+            },
+            "is_paid_randomized_reward": false
+        },
+        {
+            "item_id": 1367687,
+            "sku": "EQUIP_SHIELD_GOLD_01",
+            "name-en": "Gilded Dragon Shield",
+            "name-cn": "龙盾",
+            "type": "virtual_good",
+            "description": {
+                "en": "A legendary shield forged in dragon fire. Provides a permanent +15 defense boost and a brilliant golden glow in-game."
+            },
+            "image_url": "https:\/\/static.xsolla.com\/misc\/publisher_account\/virtual_item_default_image.png",
+            "long_description": null,
+            "attributes": [],
+            "is_free": false,
+            "order": 1,
+            "groups": [],
+            "regional_prices": [],
+            "prices": [
+                {
+                    "amount": 9.99,
+                    "currency": "USD",
+                    "is_default": true,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1325,
+                    "currency": "DZD",
+                    "country_iso": "DZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14.99,
+                    "currency": "AUD",
+                    "country_iso": "AU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "EUR",
+                    "country_iso": "AT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 10.99,
+                    "currency": "USD",
+                    "country_iso": "BH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1400,
+                    "currency": "BDT",
+                    "country_iso": "BD",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "EUR",
+                    "country_iso": "BE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "USD",
+                    "country_iso": "BM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 68.99,
+                    "currency": "BOB",
+                    "country_iso": "BO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 49.99,
+                    "currency": "BRL",
+                    "country_iso": "BR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "USD",
+                    "country_iso": "VG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "EUR",
+                    "country_iso": "BG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "USD",
+                    "country_iso": "KH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 6600,
+                    "currency": "XAF",
+                    "country_iso": "CM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 13.99,
+                    "currency": "CAD",
+                    "country_iso": "CA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 10400,
+                    "currency": "CLP",
+                    "country_iso": "CL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 36000,
+                    "currency": "COP",
+                    "country_iso": "CO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 4500,
+                    "currency": "CRC",
+                    "country_iso": "CR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 6600,
+                    "currency": "XOF",
+                    "country_iso": "CI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 10.99,
+                    "currency": "EUR",
+                    "country_iso": "HR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "EUR",
+                    "country_iso": "CY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 249.99,
+                    "currency": "CZK",
+                    "country_iso": "CZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 79,
+                    "currency": "DKK",
+                    "country_iso": "DK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "USD",
+                    "country_iso": "EC",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 589.99,
+                    "currency": "EGP",
+                    "country_iso": "EG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "USD",
+                    "country_iso": "SV",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 10.99,
+                    "currency": "EUR",
+                    "country_iso": "EE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 10.99,
+                    "currency": "EUR",
+                    "country_iso": "FI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "EUR",
+                    "country_iso": "FR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 34,
+                    "currency": "GEL",
+                    "country_iso": "GE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "EUR",
+                    "country_iso": "DE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 130,
+                    "currency": "GHS",
+                    "country_iso": "GH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.49,
+                    "currency": "GBP",
+                    "country_iso": "GI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 10.99,
+                    "currency": "EUR",
+                    "country_iso": "GR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 78,
+                    "currency": "HKD",
+                    "country_iso": "HK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 3899,
+                    "currency": "HUF",
+                    "country_iso": "HU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1100,
+                    "currency": "INR",
+                    "country_iso": "IN",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 169000,
+                    "currency": "IDR",
+                    "country_iso": "ID",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 13100,
+                    "currency": "IQD",
+                    "country_iso": "IQ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "EUR",
+                    "country_iso": "IE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 29.9,
+                    "currency": "ILS",
+                    "country_iso": "IL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "EUR",
+                    "country_iso": "IT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1740,
+                    "currency": "JPY",
+                    "country_iso": "JP",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.1,
+                    "currency": "JOD",
+                    "country_iso": "JO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 5490,
+                    "currency": "KZT",
+                    "country_iso": "KZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1500,
+                    "currency": "KES",
+                    "country_iso": "KE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "USD",
+                    "country_iso": "KW",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "EUR",
+                    "country_iso": "LV",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 8.4,
+                    "currency": "CHF",
+                    "country_iso": "LI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "EUR",
+                    "country_iso": "LT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "EUR",
+                    "country_iso": "LU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 80.88,
+                    "currency": "MOP",
+                    "country_iso": "MO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 42.99,
+                    "currency": "MYR",
+                    "country_iso": "MY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 199,
+                    "currency": "MXN",
+                    "country_iso": "MX",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "EUR",
+                    "country_iso": "MC",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 109.99,
+                    "currency": "MAD",
+                    "country_iso": "MA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 21000,
+                    "currency": "MMK",
+                    "country_iso": "MM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "EUR",
+                    "country_iso": "NL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 19.99,
+                    "currency": "NZD",
+                    "country_iso": "NZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 14500,
+                    "currency": "NGN",
+                    "country_iso": "NG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 119,
+                    "currency": "NOK",
+                    "country_iso": "NO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "USD",
+                    "country_iso": "OM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 2800,
+                    "currency": "PKR",
+                    "country_iso": "PK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "USD",
+                    "country_iso": "PA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 60000,
+                    "currency": "PYG",
+                    "country_iso": "PY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 33.99,
+                    "currency": "PEN",
+                    "country_iso": "PE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 670,
+                    "currency": "PHP",
+                    "country_iso": "PH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 43.99,
+                    "currency": "PLN",
+                    "country_iso": "PL",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "EUR",
+                    "country_iso": "PT",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 36,
+                    "currency": "QAR",
+                    "country_iso": "QA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 49.99,
+                    "currency": "RON",
+                    "country_iso": "RO",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 790,
+                    "currency": "RUB",
+                    "country_iso": "RU",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 8.49,
+                    "currency": "EUR",
+                    "country_iso": "SM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 42.99,
+                    "currency": "SAR",
+                    "country_iso": "SA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 6600,
+                    "currency": "XOF",
+                    "country_iso": "SN",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 1199,
+                    "currency": "RSD",
+                    "country_iso": "RS",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 13.98,
+                    "currency": "SGD",
+                    "country_iso": "SG",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "EUR",
+                    "country_iso": "SK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "EUR",
+                    "country_iso": "SI",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 184.99,
+                    "currency": "ZAR",
+                    "country_iso": "ZA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 16000,
+                    "currency": "KRW",
+                    "country_iso": "KR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "EUR",
+                    "country_iso": "ES",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 3150,
+                    "currency": "LKR",
+                    "country_iso": "LK",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 115,
+                    "currency": "SEK",
+                    "country_iso": "SE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 7.8,
+                    "currency": "CHF",
+                    "country_iso": "CH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 330,
+                    "currency": "TWD",
+                    "country_iso": "TW",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 26000,
+                    "currency": "TZS",
+                    "country_iso": "TZ",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 350,
+                    "currency": "THB",
+                    "country_iso": "TH",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "USD",
+                    "country_iso": "KY",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "USD",
+                    "country_iso": "FM",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "USD",
+                    "country_iso": "TC",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 539.99,
+                    "currency": "TRY",
+                    "country_iso": "TR",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 38.99,
+                    "currency": "AED",
+                    "country_iso": "AE",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 529.99,
+                    "currency": "UAH",
+                    "country_iso": "UA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 8.99,
+                    "currency": "GBP",
+                    "country_iso": "GB",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 9.99,
+                    "currency": "USD",
+                    "country_iso": "US",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 8.49,
+                    "currency": "EUR",
+                    "country_iso": "VA",
+                    "is_default": false,
+                    "is_enabled": true
+                },
+                {
+                    "amount": 263000,
+                    "currency": "VND",
+                    "country_iso": "VN",
+                    "is_default": false,
+                    "is_enabled": true
+                }
+            ],
+            "media_list": [],
+            "vc_prices": [],
+            "is_enabled": true,
+            "is_show_in_store": true,
+            "regions": [],
+            "limits": {
+                "per_user": {
+                    "total": 1,
+                    "limit_exceeded_visibility": "hide"
+                },
+                "per_item": null,
+                "recurrent_schedule": null
+            },
+            "periods": [],
+            "custom_attributes": {
+                "rarity": "legendary",
+                "item_type": "equipment",
+                "stat_type": "defense",
+                "stat_value": 15,
+                "visual_effect": "golden_glow"
+            },
+            "inventory_options": {
+                "consumable": true,
+                "expiration_period": null
+            },
+            "is_paid_randomized_reward": false
+        }
+    ],
+    "virtual_currency_packages": [],
+    "bundles": []
+}

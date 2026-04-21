@@ -1,43 +1,28 @@
+version: '3.8'
+
 services:
-  db:
+  # Changed name to match what your Go code is looking for
+  xsolla-gamestore-db: 
     image: postgres:17-alpine
+    container_name: xsolla-gamestore-db
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+      POSTGRES_USER: alanis
+      POSTGRES_PASSWORD: testing12345
+      POSTGRES_DB: gamestore_db
     ports:
-      - "5432:5432"
+      - "5434:5432" # Outer door 5434 (for you), Inner door 5432 (for Go)
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - checkout-net
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
 
-  app:
+  backend:
     build: .
+    container_name: checkout_api
     ports:
-      - "8080:8080"
+      - "8080:8080" # Match this to your ngrok port!
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres
-    networks:
-      - checkout-net
+      - DATABASE_URL=postgres://alanis:testing12345@xsolla-gamestore-db:5432/gamestore_db?sslmode=disable
     depends_on:
-      db:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+      - xsolla-gamestore-db
 
 volumes:
   postgres_data:
-
-networks:
-  checkout-net:
-    driver: bridge

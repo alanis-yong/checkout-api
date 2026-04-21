@@ -36,5 +36,11 @@
 -- select *
 -- from users;
 -- SELECT id FROM items;
-DELETE FROM carts
-WHERE user_id = 5;
+-- DELETE FROM carts
+-- WHERE user_id = 5;
+-- SELECT *
+-- FROM inventory;
+-- INSERT INTO products (sku, name_en, name_cn, price_usd, price_myr, purchase_limit)
+-- VALUES ('test_item', 'Test Item', 'Test Item', 9.99, 44.95, 10);
+SELECT *
+FROM inventory;
