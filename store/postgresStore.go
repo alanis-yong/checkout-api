@@ -36,7 +36,7 @@ func (q *Queries) GetProducts(ctx context.Context) ([]Product, error) {
 	var items []Product
 	for rows.Next() {
 		var i Product
-		if err := rows.Scan(&i.ID, &i.SKU, &i.NameEn, &i.NameZh, &i.PriceUsd, &i.PriceMyr, &i.PurchaseLimit); err != nil {
+		if err := rows.Scan(&i.ID, &i.SKU, &i.NameEn, &i.NameCn, &i.PriceUsd, &i.PriceMyr, &i.PurchaseLimit); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
