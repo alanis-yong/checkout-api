@@ -10,11 +10,12 @@ import (
 
 // TokenRequest matches the data coming from your React frontend
 type TokenRequest struct {
-	UserID string  `json:"user_id"`
-	Email  string  `json:"email"`
-	Amount float64 `json:"amount"`
-	// Change this from string to a slice of structs
-	Items []struct {
+	UserID   string  `json:"user_id"`
+	Email    string  `json:"email"`
+	Amount   float64 `json:"amount"`
+	Currency string  `json:"currency"` // <-- ADD THIS
+	Language string  `json:"language"` // <-- ADD THIS
+	Items    []struct {
 		SKU      string `json:"sku"`
 		Quantity int    `json:"quantity"`
 	} `json:"items"`
@@ -33,24 +34,28 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Printf("Token Request for User: [%s], Email: [%s]\n", req.UserID, req.Email)
+
 	// CLEAN PAYLOAD: No description, no virtual_items
 	xsollaPayload := map[string]interface{}{
 		"user": map[string]interface{}{
 			"id":    map[string]interface{}{"value": req.UserID},
 			"email": map[string]interface{}{"value": req.Email},
 			"country": map[string]interface{}{
-				"value": "MY",
+				"value": "MY", // Keep "MY" or use a dynamic req.Country if you have it
 			},
 		},
 		"purchase": map[string]interface{}{
 			"checkout": map[string]interface{}{
 				"amount":   req.Amount,
-				"currency": "USD",
+				"currency": req.Currency, // Changed from "USD" to dynamic
 			},
 		},
 		"settings": map[string]interface{}{
 			"project_id": h.ProjectID,
 			"mode":       "sandbox",
+			"language":   req.Language, // ADD THIS: Forces 'en' or 'cn' UI
+			"currency":   req.Currency, // ADD THIS: Forces the display currency
 		},
 	}
 
