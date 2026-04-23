@@ -23,7 +23,11 @@ func main() {
 	}
 	// 1. Database connection using your Docker settings
 	// Note: 'host' matches the service name in your docker-compose.yml
-	dsn := "host=xsolla-gamestore-db user=alanis password=testing12345 dbname=gamestore_db port=5432 sslmode=disable"
+	dsn := os.Getenv("DATABASE_URL")
+	if dsn == "" {
+		// Fallback for your local development
+		dsn = "host=localhost user=alanis password=testing12345 dbname=gamestore_db port=5432 sslmode=disable"
+	}
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		log.Fatal("Could not connect to database:", err)
@@ -76,8 +80,12 @@ func main() {
 	// 6. Wrap with CORS for your Vite frontend (localhost:5173)
 	finalHandler := enableCORS(mux)
 
-	fmt.Println("🚀 Server starting on :8080")
-	if err := http.ListenAndServe(":8080", finalHandler); err != nil {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	fmt.Printf("🚀 Server starting on :%s\n", port)
+	if err := http.ListenAndServe(":"+port, finalHandler); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -85,7 +93,7 @@ func main() {
 // enableCORS handles Cross-Origin Resource Sharing for the React frontend
 func enableCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Idempotency-Key, Authorization")
 
