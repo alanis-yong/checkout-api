@@ -6,14 +6,21 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 
 	"checkout-api/handlers"
 	"checkout-api/store"
 
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("No .env file found, using system env")
+	}
 	// 1. Database connection using your Docker settings
 	// Note: 'host' matches the service name in your docker-compose.yml
 	dsn := "host=xsolla-gamestore-db user=alanis password=testing12345 dbname=gamestore_db port=5432 sslmode=disable"
@@ -35,15 +42,21 @@ func main() {
 		log.Printf("⚠️ Seeding warning: %v", err)
 	}
 
+	merchantID := os.Getenv("XSOLLA_MERCHANT_ID")
+	apiKey := os.Getenv("XSOLLA_API_KEY")
+
+	// Get and convert the Project ID (since it's an int)
+	projectIDStr := os.Getenv("XSOLLA_PROJECT_ID")
+	projectID, _ := strconv.Atoi(projectIDStr)
+
 	// 4. Initialize Handler with your Xsolla credentials
 	h := &handlers.Handler{
-		MerchantID: "879363",
-		APIKey:     "080ded9939889e5b8c567ae039cb026fedd4ecf8",
-		ProjectID:  304862,
+		MerchantID: merchantID,
+		APIKey:     apiKey,
+		ProjectID:  projectID,
 		Store:      queries,
 		DB:         db,
 	}
-
 	// 5. Setup Routes
 	mux := http.NewServeMux()
 

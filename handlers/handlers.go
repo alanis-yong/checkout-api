@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 )
@@ -27,13 +28,15 @@ type Product struct {
 type XsollaWebhook struct {
 	NotificationType string `json:"notification_type"`
 	User             struct {
-		// Xsolla uses "external_id" for the ID you provided
-		ExternalID string `json:"external_id"`
+		ID         string `json:"id"`          // Xsolla's internal ID
+		ExternalID string `json:"external_id"` // This is YOUR User ID (from the token)
 	} `json:"user"`
-	Items []struct {
-		SKU      string `json:"sku"`
-		Quantity int    `json:"quantity"`
-	} `json:"items"`
+	Purchase struct {
+		VirtualItems []struct {
+			SKU      string `json:"sku"`
+			Quantity int    `json:"quantity"`
+		} `json:"virtual_items"`
+	} `json:"purchase"`
 }
 
 // NewHandler initializes a clean handler
@@ -70,42 +73,6 @@ func (h *Handler) VerifyXsollaToken(token string) (bool, error) {
 	return resp.StatusCode == http.StatusOK, nil
 }
 
-// func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
-// 	// 1. Build the Xsolla API URL using your Project ID
-// 	// Documentation: GET /v2/project/{project_id}/items/virtual_items
-// 	url := fmt.Sprintf("https://store.xsolla.com/api/v2/project/%d/items/virtual_items", h.ProjectID)
-
-// 	// 2. Create the request
-// 	req, err := http.NewRequest("GET", url, nil)
-// 	if err != nil {
-// 		h.writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "Failed to create request"})
-// 		return
-// 	}
-
-// 	// 3. (Optional) Add Language header if you want specific translations from Xsolla
-// 	req.Header.Set("Accept", "application/json")
-
-// 	// 4. Send the request to Xsolla
-// 	client := &http.Client{Timeout: 10 * time.Second}
-// 	resp, err := client.Do(req)
-// 	if err != nil {
-// 		h.writeJSON(w, http.StatusServiceUnavailable, map[string]string{"error": "Xsolla API unreachable"})
-// 		return
-// 	}
-// 	defer resp.Body.Close()
-
-// 	// 5. Decode the response from Xsolla
-// 	var result map[string]interface{}
-// 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-// 		h.writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "Failed to parse Xsolla response"})
-// 		return
-// 	}
-
-// 	// 6. Forward the result to your React frontend
-// 	// Your React code is already set up to handle the "virtual_items" key!
-// 	h.writeJSON(w, http.StatusOK, result)
-// }
-
 func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	lang := r.URL.Query().Get("lang")
 	locale := "en"
@@ -135,6 +102,62 @@ func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	h.writeJSON(w, http.StatusOK, result)
 }
 
+// func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
+// 	fmt.Println("🚀 WEBHOOK RECEIVED! Checking payload...")
+// 	var payload XsollaWebhook
+// 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+// 		h.writeJSON(w, http.StatusBadRequest, ErrorResponse{Message: "Invalid payload"})
+// 		return
+// 	}
+
+// 	// STEP 1: Handle the "Handshake" (User Validation)
+// 	// Xsolla calls this the moment the user opens the payment UI
+// 	if payload.NotificationType == "user_validation" {
+// 		// You can check your DB here if the user exists,
+// 		// but for now, we just tell Xsolla "Yes, this user is okay!"
+// 		w.WriteHeader(http.StatusOK)
+// 		return
+// 	}
+
+// 	// STEP 2: Handle the "Delivery" (Order Paid)
+// 	// This is the actual combined webhook event
+// 	// STEP 2: Handle the "Delivery" (Order Paid)
+// 	if payload.NotificationType == "order_paid" {
+// 		// 1. Try ExternalID, fallback to ID
+// 		userID := payload.User.ExternalID
+// 		if userID == "" {
+// 			userID = payload.User.ID
+// 		}
+
+// 		// 2. Point to the nested items
+// 		items := payload.Purchase.VirtualItems
+
+// 		fmt.Printf("🔍 DEBUG: Webhook Type: %s\n", payload.NotificationType)
+// 		fmt.Printf("🔍 DEBUG: User ID identified: [%s]\n", userID)
+// 		fmt.Printf("🔍 DEBUG: Number of items found: %d\n", len(items))
+
+// 		if userID == "" {
+// 			fmt.Println("❌ ERROR: No User ID found in webhook")
+// 			w.WriteHeader(http.StatusBadRequest)
+// 			return
+// 		}
+
+// 		for _, item := range items {
+// 			fmt.Printf("📦 Delivering SKU: %s (Qty: %d)\n", item.SKU, item.Quantity)
+// 			err := h.Store.AddToInventory(r.Context(), userID, item.SKU, item.Quantity)
+// 			if err != nil {
+// 				fmt.Printf("❌ DB ERROR: %v\n", err)
+// 				h.writeJSON(w, http.StatusInternalServerError, ErrorResponse{Message: "Failed to update inventory"})
+// 				return
+// 			}
+// 		}
+
+// 		// Success!
+// 		w.WriteHeader(http.StatusNoContent)
+// 		return
+// 	}
+// }
+
 func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("🚀 WEBHOOK RECEIVED! Checking payload...")
 	var payload XsollaWebhook
@@ -143,50 +166,50 @@ func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// STEP 1: Handle the "Handshake" (User Validation)
-	// Xsolla calls this the moment the user opens the payment UI
+	// STEP 1: Handle User Validation
 	if payload.NotificationType == "user_validation" {
-		// You can check your DB here if the user exists,
-		// but for now, we just tell Xsolla "Yes, this user is okay!"
 		w.WriteHeader(http.StatusOK)
 		return
 	}
 
-	// STEP 2: Handle the "Delivery" (Order Paid)
-	// This is the actual combined webhook event
+	// STEP 2: Handle Order Paid — just acknowledge, Xsolla manages inventory
 	if payload.NotificationType == "order_paid" {
-		userID := payload.User.ExternalID
-
-		fmt.Printf("🔍 DEBUG: Webhook Type: %s\n", payload.NotificationType)
-		fmt.Printf("🔍 DEBUG: Raw User ID from JSON: [%s]\n", userID)
-		fmt.Printf("🔍 DEBUG: Number of items found: %d\n", len(payload.Items))
-
-		for _, item := range payload.Items {
-			// Your existing database logic - this part is perfect!
-			err := h.Store.AddToInventory(r.Context(), userID, item.SKU, item.Quantity)
-			if err != nil {
-				h.writeJSON(w, http.StatusInternalServerError, ErrorResponse{Message: "Failed to update inventory"})
-				return
-			}
-		}
-		// Success! Xsolla likes 204 No Content for successful deliveries
+		fmt.Printf("✅ order_paid received for user: %s\n", payload.User.ExternalID)
+		// No DB write — Xsolla tracks inventory on their side.
+		// Your GetInventory handler reads from Xsolla's API directly.
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
 
-	// If we get an event we don't recognize, just ignore it
+	// Ignore unrecognized events
 	w.WriteHeader(http.StatusNoContent)
 }
 
 func (h *Handler) GetInventory(w http.ResponseWriter, r *http.Request) {
-	// For now, we use a hardcoded user, but you can get this from the token later
-	userID := "user_alanis_01"
-
-	inventory, err := h.Store.GetInventory(r.Context(), userID)
-	if err != nil {
-		h.writeJSON(w, http.StatusInternalServerError, ErrorResponse{Message: "Could not fetch inventory"})
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" {
+		http.Error(w, "Missing Authorization header", http.StatusUnauthorized)
 		return
 	}
 
-	h.writeJSON(w, http.StatusOK, inventory)
+	url := fmt.Sprintf(
+		"https://store.xsolla.com/api/v2/project/%d/user/inventory/items?limit=50&offset=0",
+		h.ProjectID,
+	)
+
+	req, _ := http.NewRequest("GET", url, nil)
+	req.Header.Set("Authorization", authHeader) // Forward the user's Bearer token
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		http.Error(w, "Failed to reach Xsolla", http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Printf("🔍 Xsolla inventory response: %s\n", string(body))
+	w.Write(body)
 }
