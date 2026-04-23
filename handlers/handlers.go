@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -69,23 +68,68 @@ func (h *Handler) VerifyXsollaToken(token string) (bool, error) {
 	return resp.StatusCode == http.StatusOK, nil
 }
 
-// In your handler.go or main.go
+// func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
+// 	// 1. Build the Xsolla API URL using your Project ID
+// 	// Documentation: GET /v2/project/{project_id}/items/virtual_items
+// 	url := fmt.Sprintf("https://store.xsolla.com/api/v2/project/%d/items/virtual_items", h.ProjectID)
+
+// 	// 2. Create the request
+// 	req, err := http.NewRequest("GET", url, nil)
+// 	if err != nil {
+// 		h.writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "Failed to create request"})
+// 		return
+// 	}
+
+// 	// 3. (Optional) Add Language header if you want specific translations from Xsolla
+// 	req.Header.Set("Accept", "application/json")
+
+// 	// 4. Send the request to Xsolla
+// 	client := &http.Client{Timeout: 10 * time.Second}
+// 	resp, err := client.Do(req)
+// 	if err != nil {
+// 		h.writeJSON(w, http.StatusServiceUnavailable, map[string]string{"error": "Xsolla API unreachable"})
+// 		return
+// 	}
+// 	defer resp.Body.Close()
+
+// 	// 5. Decode the response from Xsolla
+// 	var result map[string]interface{}
+// 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+// 		h.writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "Failed to parse Xsolla response"})
+// 		return
+// 	}
+
+// 	// 6. Forward the result to your React frontend
+// 	// Your React code is already set up to handle the "virtual_items" key!
+// 	h.writeJSON(w, http.StatusOK, result)
+// }
+
 func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
-	// 1. Load the items from your JSON file
-	data, err := os.ReadFile("virtual-items.json")
+	lang := r.URL.Query().Get("lang")
+	locale := "en"
+	if lang == "cn" {
+		locale = "zh" // Xsolla expects 'zh' for Simplified Chinese
+	}
+
+	// Pass the locale directly to Xsolla
+	url := fmt.Sprintf("https://store.xsolla.com/api/v2/project/%d/items/virtual_items?locale=%s", h.ProjectID, locale)
+
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		// Fallback to empty if file is missing
-		h.writeJSON(w, http.StatusOK, map[string]interface{}{"virtual_items": []interface{}{}})
+		h.writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "Request failed"})
 		return
 	}
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		h.writeJSON(w, http.StatusServiceUnavailable, map[string]string{"error": "Xsolla unreachable"})
+		return
+	}
+	defer resp.Body.Close()
 
 	var result map[string]interface{}
-	if err := json.Unmarshal(data, &result); err != nil {
-		h.writeJSON(w, http.StatusInternalServerError, map[string]interface{}{"error": "JSON parse error"})
-		return
-	}
-
-	// 2. Send it back. React is looking for the "virtual_items" key!
+	json.NewDecoder(resp.Body).Decode(&result)
 	h.writeJSON(w, http.StatusOK, result)
 }
 

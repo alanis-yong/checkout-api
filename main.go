@@ -41,10 +41,16 @@ func main() {
 		APIKey:     "080ded9939889e5b8c567ae039cb026fedd4ecf8",
 		ProjectID:  304862,
 		Store:      queries,
+		DB:         db,
 	}
 
 	// 5. Setup Routes
 	mux := http.NewServeMux()
+
+	// Example router setup
+	mux.HandleFunc("GET /api/cart", h.GetCart)
+	mux.HandleFunc("POST /api/cart/update", h.UpdateCartQuantity)
+	mux.HandleFunc("DELETE /api/cart/clear", h.ClearCart)
 
 	// Storefront routes
 	mux.HandleFunc("GET /api/products", h.GetProducts)
