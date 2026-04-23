@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"checkout-api/store"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -14,6 +15,7 @@ type Handler struct {
 	APIKey     string
 	ProjectID  int
 	Store      *store.Queries
+	DB         *sql.DB // <--- MAKE SURE THIS IS HERE
 }
 
 type Product struct {
@@ -108,7 +110,7 @@ func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	lang := r.URL.Query().Get("lang")
 	locale := "en"
 	if lang == "cn" {
-		locale = "zh" // Xsolla expects 'zh' for Simplified Chinese
+		locale = "cn" // Changed from "zh" to "cn"
 	}
 
 	// Pass the locale directly to Xsolla

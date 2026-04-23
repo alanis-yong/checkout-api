@@ -1,5 +1,11 @@
-package 
+package handlers
 
+import (
+	"encoding/json"
+	"net/http"
+)
+
+// GetCart - Retrieves all items in the cart for a specific user
 func (h *Handler) GetCart(w http.ResponseWriter, r *http.Request) {
 	userID := r.URL.Query().Get("user_id")
 	if userID == "" {
@@ -9,7 +15,7 @@ func (h *Handler) GetCart(w http.ResponseWriter, r *http.Request) {
 
 	rows, err := h.DB.Query("SELECT sku, quantity FROM cart_items WHERE user_id = $1", userID)
 	if err != nil {
-		http.Error(w, "DB Error", 500)
+		http.Error(w, "DB Error: "+err.Error(), 500)
 		return
 	}
 	defer rows.Close()
@@ -27,6 +33,11 @@ func (h *Handler) GetCart(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// If no items found, return an empty array [] instead of null
+	if items == nil {
+		items = []CartResult{}
+	}
+
 	h.writeJSON(w, http.StatusOK, items)
 }
 
@@ -36,7 +47,10 @@ func (h *Handler) AddToCart(w http.ResponseWriter, r *http.Request) {
 		UserID string `json:"user_id"`
 		SKU    string `json:"sku"`
 	}
-	json.NewDecoder(r.Body).Decode(&req)
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", 400)
+		return
+	}
 
 	query := `
         INSERT INTO cart_items (user_id, sku, quantity) 
@@ -46,18 +60,18 @@ func (h *Handler) AddToCart(w http.ResponseWriter, r *http.Request) {
 
 	_, err := h.DB.Exec(query, req.UserID, req.SKU)
 	if err != nil {
-		http.Error(w, "DB Error", 500)
+		http.Error(w, "DB Error: "+err.Error(), 500)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
 }
 
-// UpdateQuantity - Sets exact quantity or removes if <= 0
+// UpdateCartQuantity - Increments or decrements quantity, removes if <= 0
 func (h *Handler) UpdateCartQuantity(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		UserID string `json:"user_id"`
 		SKU    string `json:"sku"`
-		Delta  int    `json:"delta"`
+		Delta  int    `json:"delta"` // Expects +1 or -1
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -65,26 +79,34 @@ func (h *Handler) UpdateCartQuantity(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Use a transaction if you want to be extra safe,
-	// but for now, simple execution is fine.
 	_, err := h.DB.Exec(`
         UPDATE cart_items 
         SET quantity = quantity + $1 
         WHERE user_id = $2 AND sku = $3`, req.Delta, req.UserID, req.SKU)
 
 	if err != nil {
-		http.Error(w, "DB Error", 500)
+		http.Error(w, "DB Error: "+err.Error(), 500)
 		return
 	}
 
-	// Clean up items that hit 0
+	// Clean up: If an item hits 0 or less, remove it from the table
 	h.DB.Exec("DELETE FROM cart_items WHERE quantity <= 0")
 
 	w.WriteHeader(http.StatusOK)
 }
 
+// ClearCart - Removes all items for a user
 func (h *Handler) ClearCart(w http.ResponseWriter, r *http.Request) {
 	userID := r.URL.Query().Get("user_id")
-	h.DB.Exec("DELETE FROM cart_items WHERE user_id = $1", userID)
+	if userID == "" {
+		http.Error(w, "user_id is required", http.StatusBadRequest)
+		return
+	}
+
+	_, err := h.DB.Exec("DELETE FROM cart_items WHERE user_id = $1", userID)
+	if err != nil {
+		http.Error(w, "DB Error", 500)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
 }
