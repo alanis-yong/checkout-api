@@ -1,8 +1,6 @@
 package main
 
 import (
-	"context"
-	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,7 +8,6 @@ import (
 	"strconv"
 
 	"checkout-api/handlers"
-	"checkout-api/store"
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -20,30 +17,6 @@ func main() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Println("No .env file found, using system env")
-	}
-	// 1. Database connection using your Docker settings
-	// Note: 'host' matches the service name in your docker-compose.yml
-	dsn := os.Getenv("DATABASE_URL")
-	if dsn == "" {
-		// Fallback for your local development
-		dsn = "host=localhost user=alanis password=testing12345 dbname=gamestore_db port=5432 sslmode=disable"
-	}
-	db, err := sql.Open("postgres", dsn)
-	if err != nil {
-		log.Fatal("Could not connect to database:", err)
-	}
-	defer db.Close()
-
-	// 2. Initialize the store
-	queries := store.New(db)
-
-	// 3. --- SEED THE DATABASE ---
-	// This reads your virtual-items.json and syncs it to Postgres at startup
-	fmt.Println("🔄 Syncing database with virtual-items.json...")
-	if err := queries.SeedDatabase(context.Background()); err != nil {
-		// We log the error but don't stop the server, just in case
-		// the file is missing but the DB already has data.
-		log.Printf("⚠️ Seeding warning: %v", err)
 	}
 
 	merchantID := os.Getenv("XSOLLA_MERCHANT_ID")
@@ -58,8 +31,6 @@ func main() {
 		MerchantID: merchantID,
 		APIKey:     apiKey,
 		ProjectID:  projectID,
-		Store:      queries,
-		DB:         db,
 	}
 	// 5. Setup Routes
 	mux := http.NewServeMux()
