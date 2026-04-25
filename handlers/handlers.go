@@ -99,30 +99,97 @@ func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	h.writeJSON(w, http.StatusOK, result)
 }
 
+// func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
+// 	fmt.Println("🚀 WEBHOOK RECEIVED! Checking payload...")
+// 	var payload XsollaWebhook
+// 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+// 		h.writeJSON(w, http.StatusBadRequest, ErrorResponse{Message: "Invalid payload"})
+// 		return
+// 	}
+
+// 	if payload.NotificationType == "user_validation" {
+// 		w.WriteHeader(http.StatusOK)
+// 		return
+// 	}
+
+// 	if payload.NotificationType == "order_paid" {
+// 		userID := payload.User.ExternalID
+// 		if userID == "" {
+// 			userID = payload.User.ID
+// 		}
+
+// 		if userID == "" {
+// 			fmt.Println("❌ ERROR: No User ID found in webhook")
+// 			w.WriteHeader(http.StatusBadRequest)
+// 			return
+// 		}
+
+// 		items := payload.Purchase.VirtualItems
+// 		fmt.Printf("✅ order_paid received for user: %s — delivering %d items\n", userID, len(items))
+
+// 		for _, it := range items {
+// 			fmt.Printf("📦 Delivering SKU: %s (Qty: %d) to user %s\n", it.SKU, it.Quantity, userID)
+// 			if h.Store != nil {
+// 				if err := h.Store.AddToInventory(r.Context(), userID, it.SKU, it.Quantity); err != nil {
+// 					fmt.Printf("❌ DB ERROR adding to inventory: %v\n", err)
+// 					h.writeJSON(w, http.StatusInternalServerError, ErrorResponse{Message: "Failed to update inventory"})
+// 					return
+// 				}
+// 			}
+// 		}
+
+// 		w.WriteHeader(http.StatusNoContent)
+// 		return
+// 	}
+
+// 	w.WriteHeader(http.StatusNoContent)
+// }
+
 func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("🚀 WEBHOOK RECEIVED! Checking payload...")
+
+	// 1. Read the raw body to see EXACTLY what Xsolla is sending
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		fmt.Println("❌ Could not read request body")
+		return
+	}
+	fmt.Printf("Raw JSON from Xsolla: %s\n", string(body))
+
+	// 2. Decode the JSON
 	var payload XsollaWebhook
-	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-		h.writeJSON(w, http.StatusBadRequest, ErrorResponse{Message: "Invalid payload"})
+	if err := json.Unmarshal(body, &payload); err != nil {
+		fmt.Printf("❌ JSON Decode Error: %v\n", err)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	if payload.NotificationType == "user_validation" {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
+	fmt.Printf("Parsed Notification: [%s]\n", payload.NotificationType)
+	fmt.Printf("Parsed ExternalID: [%s]\n", payload.User.ExternalID)
+
+	// 3. Check for Order Paid
 	if payload.NotificationType == "order_paid" {
+		fmt.Println("✅ Found order_paid event!")
+
 		userID := payload.User.ExternalID
 		if userID == "" {
 			userID = payload.User.ID
 		}
 
-		fmt.Printf("✅ Payment Received for User: %s. Acknowledging transaction...\n", userID)
+		items := payload.Purchase.VirtualItems
+		fmt.Printf("📦 User %s bought %d items\n", userID, len(items))
+
+		// This is where you decide to save to DB or not
+		// For now, just print to see if we reached it!
+		for _, it := range items {
+			fmt.Printf("👉 Item: %s, Qty: %d\n", it.SKU, it.Quantity)
+		}
 
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
 
+	fmt.Println("ℹ️ Webhook was not order_paid, acknowledging and exiting.")
 	w.WriteHeader(http.StatusNoContent)
 }
 
