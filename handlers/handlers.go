@@ -177,7 +177,7 @@ func (h *Handler) GetInventory(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	req.SetBasicAuth(h.MerchantID, h.APIKey)
+	req.Header.Set("Authorization", authHeader)
 
 	client := &http.Client{Timeout: 10 * time.Second} // Good practice to add a timeout
 	resp, err := client.Do(req)
