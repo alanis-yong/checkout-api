@@ -172,11 +172,33 @@ func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// STEP 2: Handle Order Paid — just acknowledge, Xsolla manages inventory
+	// STEP 2: Handle Order Paid — persist entitlements to local DB
 	if payload.NotificationType == "order_paid" {
-		fmt.Printf("✅ order_paid received for user: %s\n", payload.User.ExternalID)
-		// No DB write — Xsolla tracks inventory on their side.
-		// Your GetInventory handler reads from Xsolla's API directly.
+		// Prefer ExternalID (your user id), fallback to Xsolla id
+		userID := payload.User.ExternalID
+		if userID == "" {
+			userID = payload.User.ID
+		}
+
+		if userID == "" {
+			fmt.Println("❌ ERROR: No User ID found in webhook")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		items := payload.Purchase.VirtualItems
+		fmt.Printf("✅ order_paid received for user: %s — delivering %d items\n", userID, len(items))
+
+		for _, it := range items {
+			fmt.Printf("📦 Delivering SKU: %s (Qty: %d) to user %s\n", it.SKU, it.Quantity, userID)
+			if err := h.Store.AddToInventory(r.Context(), userID, it.SKU, it.Quantity); err != nil {
+				fmt.Printf("❌ DB ERROR adding to inventory: %v\n", err)
+				h.writeJSON(w, http.StatusInternalServerError, ErrorResponse{Message: "Failed to update inventory"})
+				return
+			}
+		}
+
+		// Acknowledge
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
@@ -186,7 +208,6 @@ func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetInventory(w http.ResponseWriter, r *http.Request) {
-	// 1. Keep this for security (verifies the user is logged into your site)
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
 		http.Error(w, "Missing Authorization header", http.StatusUnauthorized)
@@ -195,7 +216,8 @@ func (h *Handler) GetInventory(w http.ResponseWriter, r *http.Request) {
 
 	userID := r.URL.Query().Get("user_id")
 	if userID == "" {
-		fmt.Println("⚠️ Warning: No userID provided")
+		// If it's not in the URL, your frontend isn't sending it!
+		fmt.Println("⚠️ Warning: No userID provided in request query")
 	}
 
 	url := fmt.Sprintf(
@@ -205,11 +227,7 @@ func (h *Handler) GetInventory(w http.ResponseWriter, r *http.Request) {
 	)
 
 	req, _ := http.NewRequest("GET", url, nil)
-
-	// --- THE CRITICAL FIX ---
-	// Use your SERVER'S API Key, not the user's token
-	req.Header.Set("Authorization", "Bearer "+h.APIKey)
-	// ------------------------
+	req.Header.Set("Authorization", authHeader) // Forward the user's Bearer token
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
