@@ -58,9 +58,6 @@ func (h *Handler) writeJSON(w http.ResponseWriter, status int, data interface{})
 
 func (h *Handler) VerifyXsollaToken(token string) (bool, error) {
 	client := &http.Client{Timeout: 5 * time.Second}
-
-	// GET https://login.xsolla.com/api/users/me
-	// This is the classic endpoint to verify a user's JWT
 	req, _ := http.NewRequest("GET", "https://login.xsolla.com/api/users/me", nil)
 	req.Header.Set("Authorization", "Bearer "+token)
 
@@ -158,16 +155,9 @@ func (h *Handler) GetInventory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := r.URL.Query().Get("user_id")
-	if userID == "" {
-		h.writeJSON(w, http.StatusBadRequest, ErrorResponse{Message: "Missing user_id query parameter"})
-		return
-	}
-
 	url := fmt.Sprintf(
-		"https://store.xsolla.com/api/v2/project/%d/user/%s/inventory/items?limit=50&offset=0&sandbox=1",
+		"https://store.xsolla.com/api/v2/project/%d/user/inventory/items?limit=50&offset=0&sandbox=1",
 		h.ProjectID,
-		userID,
 	)
 
 	req, err := http.NewRequest("GET", url, nil)
@@ -188,8 +178,6 @@ func (h *Handler) GetInventory(w http.ResponseWriter, r *http.Request) {
 	defer resp.Body.Close()
 
 	body, _ := io.ReadAll(resp.Body)
-	fmt.Printf("🔍 Xsolla inventory response (user=%s, status=%d): %s\n", userID, resp.StatusCode, string(body))
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(resp.StatusCode)
 	w.Write(body)
