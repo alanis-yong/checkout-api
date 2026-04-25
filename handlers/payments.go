@@ -37,26 +37,22 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("Token Request for User: [%s], Email: [%s]\n", req.UserID, req.Email)
 
+	// Inside GetXsollaToken handler
 	xsollaPayload := map[string]interface{}{
 		"user": map[string]interface{}{
 			"id":      map[string]interface{}{"value": req.UserID},
-			"email":   map[string]interface{}{"value": "student@xsolla.school"},
+			"email":   map[string]interface{}{"value": req.Email},
 			"country": map[string]interface{}{"value": "US"},
 		},
 		"purchase": map[string]interface{}{
 			"virtual_items": map[string]interface{}{
-				"items": []map[string]interface{}{
-					{
-						"sku":      "EQUIP_SHIELD_GOLD_01",
-						"quantity": 1,
-					},
-				},
+				"items": req.Items,
 			},
 		},
 		"settings": map[string]interface{}{
 			"project_id": h.ProjectID,
 			"mode":       "sandbox",
-			"currency":   "USD",
+			"currency":   req.Currency,
 		},
 	}
 
