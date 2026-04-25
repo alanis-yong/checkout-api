@@ -1,13 +1,14 @@
 package main
 
 import (
+	"checkout-api/handlers"
+	"checkout-api/store"
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
-
-	"checkout-api/handlers"
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -26,11 +27,15 @@ func main() {
 	projectIDStr := os.Getenv("XSOLLA_PROJECT_ID")
 	projectID, _ := strconv.Atoi(projectIDStr)
 
+	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+
 	// 4. Initialize Handler with your Xsolla credentials
 	h := &handlers.Handler{
 		MerchantID: merchantID,
 		APIKey:     apiKey,
 		ProjectID:  projectID,
+		DB:         db,
+		Store:      store.New(db),
 	}
 	// 5. Setup Routes
 	mux := http.NewServeMux()
