@@ -47,8 +47,8 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 			"virtual_items": map[string]interface{}{
 				"items": []map[string]interface{}{
 					{
-						"sku":    "EQUIP_SHIELD_GOLD_01",
-						"amount": 11,
+						"sku":      "EQUIP_SHIELD_GOLD_01",
+						"quantity": 1,
 					},
 				},
 			},
