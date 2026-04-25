@@ -107,39 +107,17 @@ func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// STEP 1: Handle User Validation
 	if payload.NotificationType == "user_validation" {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
-
-	// STEP 2: Handle Order Paid — persist entitlements to local DB
 	if payload.NotificationType == "order_paid" {
-		// Prefer ExternalID (your user id), fallback to Xsolla id
 		userID := payload.User.ExternalID
 		if userID == "" {
 			userID = payload.User.ID
 		}
 
-		if userID == "" {
-			fmt.Println("❌ ERROR: No User ID found in webhook")
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		items := payload.Purchase.VirtualItems
-		fmt.Printf("✅ order_paid received for user: %s — delivering %d items\n", userID, len(items))
-
-		for _, it := range items {
-			fmt.Printf("📦 Delivering SKU: %s (Qty: %d) to user %s\n", it.SKU, it.Quantity, userID)
-			if h.Store != nil {
-				if err := h.Store.AddToInventory(r.Context(), userID, it.SKU, it.Quantity); err != nil {
-					fmt.Printf("❌ DB ERROR adding to inventory: %v\n", err)
-					h.writeJSON(w, http.StatusInternalServerError, ErrorResponse{Message: "Failed to update inventory"})
-					return
-				}
-			}
-		}
+		fmt.Printf("✅ Payment Received for User: %s. Acknowledging transaction...\n", userID)
 
 		w.WriteHeader(http.StatusNoContent)
 		return
