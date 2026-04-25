@@ -199,8 +199,9 @@ func (h *Handler) GetInventory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	url := fmt.Sprintf(
-		"https://store.xsolla.com/api/v2/project/%d/user/inventory/items?limit=50&offset=0",
+		"https://store.xsolla.com/api/v2/project/%d/user/%s/inventory/items?limit=50&offset=0&sandbox=1",
 		h.ProjectID,
+		userID,
 	)
 
 	req, _ := http.NewRequest("GET", url, nil)
@@ -215,8 +216,9 @@ func (h *Handler) GetInventory(w http.ResponseWriter, r *http.Request) {
 	defer resp.Body.Close()
 
 	body, _ := io.ReadAll(resp.Body)
-	w.Header().Set("Content-Type", "application/json")
+
 	fmt.Printf("🔍 Xsolla inventory response: %s\n", string(body))
 	fmt.Println("Checking inventory for:", userID)
+	w.Header().Set("Content-Type", "application/json")
 	w.Write(body)
 }
