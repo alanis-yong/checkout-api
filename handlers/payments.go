@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 )
@@ -13,8 +14,8 @@ type TokenRequest struct {
 	UserID   string  `json:"user_id"`
 	Email    string  `json:"email"`
 	Amount   float64 `json:"amount"`
-	Currency string  `json:"currency"` // <-- ADD THIS
-	Language string  `json:"language"` // <-- ADD THIS
+	Currency string  `json:"currency"`
+	Language string  `json:"language"`
 	Items    []struct {
 		SKU      string `json:"sku"`
 		Quantity int    `json:"quantity"`
@@ -36,23 +37,15 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("Token Request for User: [%s], Email: [%s]\n", req.UserID, req.Email)
 
-	// CLEAN PAYLOAD: No description, no virtual_items
 	xsollaPayload := map[string]interface{}{
 		"user": map[string]interface{}{
-			"id":    map[string]interface{}{"value": req.UserID},
-			"email": map[string]interface{}{"value": req.Email},
-			"country": map[string]interface{}{
-				"value": "USD",
-			},
+			"id":      map[string]interface{}{"value": req.UserID},
+			"email":   map[string]interface{}{"value": req.Email},
+			"country": map[string]interface{}{"value": "MY"},
 		},
 		"purchase": map[string]interface{}{
 			"virtual_items": map[string]interface{}{
-				"items": []map[string]interface{}{
-					{
-						"sku":      "EQUIP_SHIELD_GOLD_01",
-						"quantity": 1,
-					},
-				},
+				"items": req.Items,
 			},
 		},
 		"settings": map[string]interface{}{
@@ -77,6 +70,11 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer resp.Body.Close()
+
+	xsollaResponseBody, _ := io.ReadAll(resp.Body)
+	if resp.StatusCode != http.StatusOK {
+		fmt.Printf("❌ Xsolla API Error (%d): %s\n", resp.StatusCode, string(xsollaResponseBody))
+	}
 
 	var xResult map[string]interface{}
 	json.NewDecoder(resp.Body).Decode(&xResult)
