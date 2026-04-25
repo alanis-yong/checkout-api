@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"checkout-api/store"
-	"database/sql"
+	// "checkout-api/store"
+	// "database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -15,8 +15,8 @@ type Handler struct {
 	MerchantID string
 	APIKey     string
 	ProjectID  int
-	Store      *store.Queries
-	DB         *sql.DB // <--- MAKE SURE THIS IS HERE
+	// Store      *store.Queries
+	// DB         *sql.DB // <--- MAKE SURE THIS IS HERE
 }
 
 type Product struct {
@@ -133,21 +133,19 @@ func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
 		items := payload.Purchase.VirtualItems
 		fmt.Printf("✅ order_paid received for user: %s — delivering %d items\n", userID, len(items))
 
-		for _, it := range items {
-			fmt.Printf("📦 Delivering SKU: %s (Qty: %d) to user %s\n", it.SKU, it.Quantity, userID)
-			if err := h.Store.AddToInventory(r.Context(), userID, it.SKU, it.Quantity); err != nil {
-				fmt.Printf("❌ DB ERROR adding to inventory: %v\n", err)
-				h.writeJSON(w, http.StatusInternalServerError, ErrorResponse{Message: "Failed to update inventory"})
-				return
-			}
-		}
+		// for _, it := range items {
+		// 	fmt.Printf("📦 Delivering SKU: %s (Qty: %d) to user %s\n", it.SKU, it.Quantity, userID)
+		// 	if err := h.Store.AddToInventory(r.Context(), userID, it.SKU, it.Quantity); err != nil {
+		// 		fmt.Printf("❌ DB ERROR adding to inventory: %v\n", err)
+		// 		h.writeJSON(w, http.StatusInternalServerError, ErrorResponse{Message: "Failed to update inventory"})
+		// 		return
+		// 	}
+		// }
 
-		// Acknowledge
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
 
-	// Ignore unrecognized events
 	w.WriteHeader(http.StatusNoContent)
 }
 
@@ -171,14 +169,24 @@ func (h *Handler) GetInventory(w http.ResponseWriter, r *http.Request) {
 	)
 
 	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Set("Authorization", "Bearer "+h.APIKey) // Forward the user's Bearer token
+	// req.Header.Set("Authorization", "Bearer "+h.APIKey) // Forward the user's Bearer token
+	// client := &http.Client{}
+	// resp, err := client.Do(req)
+	// if err != nil {
+	// 	http.Error(w, "Failed to reach Xsolla", http.StatusInternalServerError)
+	// 	return
+	// }
 
-	client := &http.Client{}
+	req.SetBasicAuth(h.MerchantID, h.APIKey)
+
+	client := &http.Client{Timeout: 10 * time.Second} // Good practice to add a timeout
 	resp, err := client.Do(req)
 	if err != nil {
+		fmt.Printf("❌ Xsolla Request Error: %v\n", err)
 		http.Error(w, "Failed to reach Xsolla", http.StatusInternalServerError)
 		return
 	}
+
 	defer resp.Body.Close()
 
 	body, _ := io.ReadAll(resp.Body)
