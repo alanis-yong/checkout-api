@@ -42,29 +42,20 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 			"id":    map[string]interface{}{"value": req.UserID},
 			"email": map[string]interface{}{"value": req.Email},
 			"country": map[string]interface{}{
-				"value": "MY",
+				"value": "MY", // Keep "MY" or use a dynamic req.Country if you have it
 			},
 		},
 		"purchase": map[string]interface{}{
 			"checkout": map[string]interface{}{
 				"amount":   req.Amount,
-				"currency": req.Currency,
-			},
-			// ADD THIS BLOCK: This sends the items to the webhook
-			"virtual_items": map[string]interface{}{
-				"items": []map[string]interface{}{
-					{
-						"sku":      "your_item_sku", // Replace with a real SKU from your Xsolla Dashboard
-						"quantity": 1,
-					},
-				},
+				"currency": req.Currency, // Changed from "USD" to dynamic
 			},
 		},
 		"settings": map[string]interface{}{
 			"project_id": h.ProjectID,
 			"mode":       "sandbox",
-			"language":   req.Language,
-			"currency":   req.Currency,
+			"language":   req.Language, // ADD THIS: Forces 'en' or 'cn' UI
+			"currency":   req.Currency, // ADD THIS: Forces the display currency
 		},
 	}
 
