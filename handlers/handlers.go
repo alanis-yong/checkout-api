@@ -125,33 +125,34 @@ func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
 	if userID == "" {
 		userID = payload.User.ID
 
-	fmt.Printf("Parsed Notification: [%s]\n", payload.NotificationType)
-	fmt.Printf("User ID found: [%s]\n", userID)
+		fmt.Printf("Parsed Notification: [%s]\n", payload.NotificationType)
+		fmt.Printf("User ID found: [%s]\n", userID)
 
-	if payload.NotificationType == "order_paid" || payload.NotificationType == "payment" {
+		if payload.NotificationType == "order_paid" || payload.NotificationType == "payment" {
 
-		items := payload.Items
-		if len(items) == 0 {
-			items = payload.Purchase.VirtualItems
-		}
-
-		fmt.Printf("📦 Found %d items to deliver\n", len(items))
-
-		if len(items) > 0 {
-			for _, it := range items {
-				fmt.Printf("👉 Delivering SKU: %s, Qty: %d to User %s\n", it.SKU, it.Quantity, userID)
-				// If you want to save to your local DB, add h.Store.AddToInventory here
+			items := payload.Items
+			if len(items) == 0 {
+				items = payload.Purchase.VirtualItems
 			}
-		} else {
-			fmt.Println("ℹ️ No items found in this notification (typical for basic 'payment' types).")
+
+			fmt.Printf("📦 Found %d items to deliver\n", len(items))
+
+			if len(items) > 0 {
+				for _, it := range items {
+					fmt.Printf("👉 Delivering SKU: %s, Qty: %d to User %s\n", it.SKU, it.Quantity, userID)
+					// If you want to save to your local DB, add h.Store.AddToInventory here
+				}
+			} else {
+				fmt.Println("ℹ️ No items found in this notification (typical for basic 'payment' types).")
+			}
+
+			w.WriteHeader(http.StatusNoContent)
+			return
 		}
 
+		fmt.Println("ℹ️ Webhook was not order_paid, acknowledging and exiting.")
 		w.WriteHeader(http.StatusNoContent)
-		return
 	}
-
-	fmt.Println("ℹ️ Webhook was not order_paid, acknowledging and exiting.")
-	w.WriteHeader(http.StatusNoContent)
 }
 
 func (h *Handler) GetInventory(w http.ResponseWriter, r *http.Request) {
