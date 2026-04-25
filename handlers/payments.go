@@ -41,14 +41,14 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 		"user": map[string]interface{}{
 			"id":      map[string]interface{}{"value": req.UserID},
 			"email":   map[string]interface{}{"value": req.Email},
-			"country": map[string]interface{}{"value": "USD"},
+			"country": map[string]interface{}{"value": "US"},
 		},
 		"purchase": map[string]interface{}{
 			"virtual_items": map[string]interface{}{
 				"items": []map[string]interface{}{
 					{
 						"sku":    "EQUIP_SHIELD_GOLD_01",
-						"amount": 9.99,
+						"amount": 11,
 					},
 				},
 			},
