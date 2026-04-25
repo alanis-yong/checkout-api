@@ -192,6 +192,12 @@ func (h *Handler) GetInventory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userID := r.URL.Query().Get("user_id")
+	if userID == "" {
+		// If it's not in the URL, your frontend isn't sending it!
+		fmt.Println("⚠️ Warning: No userID provided in request query")
+	}
+
 	url := fmt.Sprintf(
 		"https://store.xsolla.com/api/v2/project/%d/user/inventory/items?limit=50&offset=0",
 		h.ProjectID,
@@ -211,5 +217,6 @@ func (h *Handler) GetInventory(w http.ResponseWriter, r *http.Request) {
 	body, _ := io.ReadAll(resp.Body)
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Printf("🔍 Xsolla inventory response: %s\n", string(body))
+	fmt.Println("Checking inventory for:", userID)
 	w.Write(body)
 }
