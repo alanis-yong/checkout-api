@@ -123,16 +123,13 @@ func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
 
 	userID := payload.User.ExternalID
 	if userID == "" {
-		userID = payload.User.ID // This fixes the "Parsed ExternalID: []" issue
-	}
+		userID = payload.User.ID
 
 	fmt.Printf("Parsed Notification: [%s]\n", payload.NotificationType)
 	fmt.Printf("User ID found: [%s]\n", userID)
 
-	// 2. Allow both "order_paid" and "payment"
 	if payload.NotificationType == "order_paid" || payload.NotificationType == "payment" {
 
-		// Check all possible locations for items
 		items := payload.Items
 		if len(items) == 0 {
 			items = payload.Purchase.VirtualItems
