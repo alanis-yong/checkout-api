@@ -42,7 +42,7 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 			"id":    map[string]interface{}{"value": req.UserID},
 			"email": map[string]interface{}{"value": req.Email},
 			"country": map[string]interface{}{
-				"value": "MY", // Keep "MY" or use a dynamic req.Country if you have it
+				"value": "USD",
 			},
 		},
 		"purchase": map[string]interface{}{
@@ -58,8 +58,8 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 		"settings": map[string]interface{}{
 			"project_id": h.ProjectID,
 			"mode":       "sandbox",
-			"language":   req.Language, // ADD THIS: Forces 'en' or 'cn' UI
-			"currency":   req.Currency, // ADD THIS: Forces the display currency
+			"language":   req.Language,
+			"currency":   req.Currency,
 		},
 	}
 
