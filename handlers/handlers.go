@@ -121,21 +121,32 @@ func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userID := payload.User.ExternalID
+	if userID == "" {
+		userID = payload.User.ID // This fixes the "Parsed ExternalID: []" issue
+	}
+
 	fmt.Printf("Parsed Notification: [%s]\n", payload.NotificationType)
-	fmt.Printf("Parsed ExternalID: [%s]\n", payload.User.ExternalID)
+	fmt.Printf("User ID found: [%s]\n", userID)
 
-	if payload.NotificationType == "order_paid" {
-		// Check the new "items" field first
+	// 2. Allow both "order_paid" and "payment"
+	if payload.NotificationType == "order_paid" || payload.NotificationType == "payment" {
+
+		// Check all possible locations for items
 		items := payload.Items
-
-		// If that's empty, check the old "purchase.virtual_items" field
 		if len(items) == 0 {
 			items = payload.Purchase.VirtualItems
 		}
 
 		fmt.Printf("📦 Found %d items to deliver\n", len(items))
-		for _, it := range items {
-			fmt.Printf("👉 Delivering SKU: %s, Qty: %d\n", it.SKU, it.Quantity)
+
+		if len(items) > 0 {
+			for _, it := range items {
+				fmt.Printf("👉 Delivering SKU: %s, Qty: %d to User %s\n", it.SKU, it.Quantity, userID)
+				// If you want to save to your local DB, add h.Store.AddToInventory here
+			}
+		} else {
+			fmt.Println("ℹ️ No items found in this notification (typical for basic 'payment' types).")
 		}
 
 		w.WriteHeader(http.StatusNoContent)
