@@ -168,8 +168,8 @@ func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Parsed ExternalID: [%s]\n", payload.User.ExternalID)
 
 	// 3. Check for Order Paid
-	if payload.NotificationType == "order_paid" {
-		fmt.Println("✅ Found order_paid event!")
+	if payload.NotificationType == "order_paid" || payload.NotificationType == "payment" {
+		fmt.Println("✅ Found a successful payment event!")
 
 		userID := payload.User.ExternalID
 		if userID == "" {

@@ -48,7 +48,15 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 		"purchase": map[string]interface{}{
 			"checkout": map[string]interface{}{
 				"amount":   req.Amount,
-				"currency": req.Currency, // Changed from "USD" to dynamic
+				"currency": req.Currency,
+			},
+			"virtual_items": map[string]interface{}{
+				"items": []map[string]interface{}{
+					{
+						"sku":      "your_item_sku_here", // Pass this from your React frontend
+						"quantity": 1,
+					},
+				},
 			},
 		},
 		"settings": map[string]interface{}{
