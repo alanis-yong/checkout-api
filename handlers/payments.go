@@ -40,7 +40,7 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 	xsollaPayload := map[string]interface{}{
 		"user": map[string]interface{}{
 			"id":      map[string]interface{}{"value": req.UserID},
-			"email":   map[string]interface{}{"value": req.Email},
+			"email":   map[string]interface{}{"value": "student@xsolla.school"},
 			"country": map[string]interface{}{"value": "US"},
 		},
 		"purchase": map[string]interface{}{
