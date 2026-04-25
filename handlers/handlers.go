@@ -135,10 +135,12 @@ func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
 
 		for _, it := range items {
 			fmt.Printf("📦 Delivering SKU: %s (Qty: %d) to user %s\n", it.SKU, it.Quantity, userID)
-			if err := h.Store.AddToInventory(r.Context(), userID, it.SKU, it.Quantity); err != nil {
-				fmt.Printf("❌ DB ERROR adding to inventory: %v\n", err)
-				h.writeJSON(w, http.StatusInternalServerError, ErrorResponse{Message: "Failed to update inventory"})
-				return
+			if h.Store != nil {
+				if err := h.Store.AddToInventory(r.Context(), userID, it.SKU, it.Quantity); err != nil {
+					fmt.Printf("❌ DB ERROR adding to inventory: %v\n", err)
+					h.writeJSON(w, http.StatusInternalServerError, ErrorResponse{Message: "Failed to update inventory"})
+					return
+				}
 			}
 		}
 
@@ -152,14 +154,14 @@ func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GetInventory(w http.ResponseWriter, r *http.Request) {
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
-		http.Error(w, "Missing Authorization header", http.StatusUnauthorized)
+		h.writeJSON(w, http.StatusUnauthorized, ErrorResponse{Message: "Missing Authorization header"})
 		return
 	}
 
 	userID := r.URL.Query().Get("user_id")
 	if userID == "" {
-		// If it's not in the URL, your frontend isn't sending it!
-		fmt.Println("⚠️ Warning: No userID provided in request query")
+		h.writeJSON(w, http.StatusBadRequest, ErrorResponse{Message: "Missing user_id query parameter"})
+		return
 	}
 
 	url := fmt.Sprintf(
@@ -168,31 +170,27 @@ func (h *Handler) GetInventory(w http.ResponseWriter, r *http.Request) {
 		userID,
 	)
 
-	req, _ := http.NewRequest("GET", url, nil)
-	// req.Header.Set("Authorization", "Bearer "+h.APIKey) // Forward the user's Bearer token
-	// client := &http.Client{}
-	// resp, err := client.Do(req)
-	// if err != nil {
-	// 	http.Error(w, "Failed to reach Xsolla", http.StatusInternalServerError)
-	// 	return
-	// }
-
-	req.Header.Set("Authorization", authHeader)
-
-	client := &http.Client{Timeout: 10 * time.Second} // Good practice to add a timeout
-	resp, err := client.Do(req)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		fmt.Printf("❌ Xsolla Request Error: %v\n", err)
-		http.Error(w, "Failed to reach Xsolla", http.StatusInternalServerError)
+		h.writeJSON(w, http.StatusInternalServerError, ErrorResponse{Message: "Failed to build request"})
 		return
 	}
 
+	req.Header.Set("Authorization", authHeader)
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Printf("❌ Xsolla Request Error: %v\n", err)
+		h.writeJSON(w, http.StatusInternalServerError, ErrorResponse{Message: "Failed to reach Xsolla"})
+		return
+	}
 	defer resp.Body.Close()
 
 	body, _ := io.ReadAll(resp.Body)
+	fmt.Printf("🔍 Xsolla inventory response (user=%s, status=%d): %s\n", userID, resp.StatusCode, string(body))
 
-	fmt.Printf("🔍 Xsolla inventory response: %s\n", string(body))
-	fmt.Println("Checking inventory for:", userID)
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(resp.StatusCode)
 	w.Write(body)
 }
