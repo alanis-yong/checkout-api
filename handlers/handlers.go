@@ -102,62 +102,6 @@ func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	h.writeJSON(w, http.StatusOK, result)
 }
 
-// func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
-// 	fmt.Println("🚀 WEBHOOK RECEIVED! Checking payload...")
-// 	var payload XsollaWebhook
-// 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-// 		h.writeJSON(w, http.StatusBadRequest, ErrorResponse{Message: "Invalid payload"})
-// 		return
-// 	}
-
-// 	// STEP 1: Handle the "Handshake" (User Validation)
-// 	// Xsolla calls this the moment the user opens the payment UI
-// 	if payload.NotificationType == "user_validation" {
-// 		// You can check your DB here if the user exists,
-// 		// but for now, we just tell Xsolla "Yes, this user is okay!"
-// 		w.WriteHeader(http.StatusOK)
-// 		return
-// 	}
-
-// 	// STEP 2: Handle the "Delivery" (Order Paid)
-// 	// This is the actual combined webhook event
-// 	// STEP 2: Handle the "Delivery" (Order Paid)
-// 	if payload.NotificationType == "order_paid" {
-// 		// 1. Try ExternalID, fallback to ID
-// 		userID := payload.User.ExternalID
-// 		if userID == "" {
-// 			userID = payload.User.ID
-// 		}
-
-// 		// 2. Point to the nested items
-// 		items := payload.Purchase.VirtualItems
-
-// 		fmt.Printf("🔍 DEBUG: Webhook Type: %s\n", payload.NotificationType)
-// 		fmt.Printf("🔍 DEBUG: User ID identified: [%s]\n", userID)
-// 		fmt.Printf("🔍 DEBUG: Number of items found: %d\n", len(items))
-
-// 		if userID == "" {
-// 			fmt.Println("❌ ERROR: No User ID found in webhook")
-// 			w.WriteHeader(http.StatusBadRequest)
-// 			return
-// 		}
-
-// 		for _, item := range items {
-// 			fmt.Printf("📦 Delivering SKU: %s (Qty: %d)\n", item.SKU, item.Quantity)
-// 			err := h.Store.AddToInventory(r.Context(), userID, item.SKU, item.Quantity)
-// 			if err != nil {
-// 				fmt.Printf("❌ DB ERROR: %v\n", err)
-// 				h.writeJSON(w, http.StatusInternalServerError, ErrorResponse{Message: "Failed to update inventory"})
-// 				return
-// 			}
-// 		}
-
-// 		// Success!
-// 		w.WriteHeader(http.StatusNoContent)
-// 		return
-// 	}
-// }
-
 func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("🚀 WEBHOOK RECEIVED! Checking payload...")
 	var payload XsollaWebhook
@@ -227,7 +171,7 @@ func (h *Handler) GetInventory(w http.ResponseWriter, r *http.Request) {
 	)
 
 	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Set("Authorization", authHeader) // Forward the user's Bearer token
+	req.Header.Set("Authorization", "Bearer "+h.APIKey) // Forward the user's Bearer token
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
