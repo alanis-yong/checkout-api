@@ -36,8 +36,15 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Printf("Token Request for User: [%s], Email: [%s]\n", req.UserID, req.Email)
+	formattedItems := make([]map[string]interface{}, len(req.Items))
+	for i, item := range req.Items {
+		formattedItems[i] = map[string]interface{}{
+			"sku":    item.SKU,      // Ensure item.SKU is the field name in your TokenRequest struct
+			"amount": item.Quantity, // Renaming your internal 'Quantity' to Xsolla's 'amount'
+		}
+	}
+	// --- NEW MAPPING STEP END ---
 
-	// Inside GetXsollaToken handler
 	xsollaPayload := map[string]interface{}{
 		"user": map[string]interface{}{
 			"id":      map[string]interface{}{"value": req.UserID},
@@ -46,7 +53,7 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 		},
 		"purchase": map[string]interface{}{
 			"virtual_items": map[string]interface{}{
-				"items": req.Items,
+				"items": formattedItems, // Use the formatted list here!
 			},
 		},
 		"settings": map[string]interface{}{
