@@ -25,13 +25,14 @@ type InventoryItem struct {
 const (
 	GetProductsQuery = `SELECT id, sku, name_en, name_cn, price_usd, price_myr, purchase_limit FROM products`
 
-	GetInventoryQuery = `SELECT sku, quantity FROM inventory WHERE user_id = $1`
+	// Change 'inventory' to 'user_inventory' to match your migration
+	GetInventoryQuery = `SELECT sku, quantity FROM user_inventory WHERE user_id = $1`
 
 	AddToInventoryQuery = `
-   INSERT INTO inventory (user_id, sku, quantity)
+   INSERT INTO user_inventory (user_id, sku, quantity)
    VALUES ($1, $2, $3)
    ON CONFLICT (user_id, sku)
-   DO UPDATE SET quantity = inventory.quantity + EXCLUDED.quantity`
+   DO UPDATE SET quantity = user_inventory.quantity + EXCLUDED.quantity`
 )
 
 // 3. DATABASE SETUP
