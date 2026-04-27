@@ -52,8 +52,9 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 			"country": map[string]interface{}{"value": "US"},
 		},
 		"purchase": map[string]interface{}{
-			"virtual_items": map[string]interface{}{
-				"items": formattedItems, // Use the formatted list here!
+			"checkout": map[string]interface{}{
+				"amount":   req.Amount,
+				"currency": req.Currency,
 			},
 		},
 		"settings": map[string]interface{}{
