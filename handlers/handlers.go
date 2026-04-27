@@ -151,3 +151,23 @@ func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+func (h *Handler) GetInventory(w http.ResponseWriter, r *http.Request) {
+	// 1. Get the user_id from the URL query
+	userID := r.URL.Query().Get("user_id")
+	if userID == "" {
+		h.writeJSON(w, http.StatusBadRequest, map[string]string{"error": "user_id query parameter is required"})
+		return
+	}
+
+	// 2. Fetch from your local PostgreSQL (using the Store method we created)
+	inventory, err := h.Store.GetInventory(r.Context(), userID)
+	if err != nil {
+		fmt.Printf("❌ Database error fetching inventory: %v\n", err)
+		h.writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "Could not retrieve inventory"})
+		return
+	}
+
+	// 3. Return the items to your React frontend
+	h.writeJSON(w, http.StatusOK, inventory)
+}
