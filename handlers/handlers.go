@@ -106,86 +106,48 @@ func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("🚀 WEBHOOK RECEIVED! Checking payload...")
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		fmt.Println("❌ Could not read request body")
-		return
-	}
-	fmt.Printf("Raw JSON from Xsolla: %s\n", string(body))
-
-	var payload XsollaWebhook
-	if err := json.Unmarshal(body, &payload); err != nil {
-		fmt.Printf("❌ JSON Decode Error: %v\n", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
+	var payload XsollaWebhook
+	if err := json.Unmarshal(body, &payload); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// Use ExternalID if available, otherwise fallback to ID
 	userID := payload.User.ExternalID
 	if userID == "" {
 		userID = payload.User.ID
+	}
 
-		fmt.Printf("Parsed Notification: [%s]\n", payload.NotificationType)
-		fmt.Printf("User ID found: [%s]\n", userID)
-
-		if payload.NotificationType == "order_paid" || payload.NotificationType == "payment" {
-
-			items := payload.Items
-			if len(items) == 0 {
-				items = payload.Purchase.VirtualItems
-			}
-
-			fmt.Printf("📦 Found %d items to deliver\n", len(items))
-
-			if len(items) > 0 {
-				for _, it := range items {
-					fmt.Printf("👉 Delivering SKU: %s, Qty: %d to User %s\n", it.SKU, it.Quantity, userID)
-					// If you want to save to your local DB, add h.Store.AddToInventory here
-				}
-			} else {
-				fmt.Println("ℹ️ No items found in this notification (typical for basic 'payment' types).")
-			}
-
-			w.WriteHeader(http.StatusNoContent)
-			return
+	if payload.NotificationType == "order_paid" || payload.NotificationType == "payment" {
+		// Determine which item list to use
+		items := payload.Items
+		if len(items) == 0 {
+			items = payload.Purchase.VirtualItems
 		}
 
-		fmt.Println("ℹ️ Webhook was not order_paid, acknowledging and exiting.")
+		fmt.Printf("📦 Processing %d items for User: %s\n", len(items), userID)
+
+		for _, it := range items {
+			// 🚀 THE KEY CONNECTION: Save to your DB
+			// This ensures your local inventory is always in sync with Xsolla
+			err := h.Store.AddUserInventory(userID, it.SKU, it.Quantity)
+			if err != nil {
+				fmt.Printf("❌ Failed to update local inventory for SKU %s: %v\n", it.SKU, err)
+				// We still return 204 to Xsolla so they don't spam us with retries
+			} else {
+				fmt.Printf("✅ Successfully added %d of %s to user inventory\n", it.Quantity, it.SKU)
+			}
+		}
+
 		w.WriteHeader(http.StatusNoContent)
-	}
-}
-
-func (h *Handler) GetInventory(w http.ResponseWriter, r *http.Request) {
-	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
-		h.writeJSON(w, http.StatusUnauthorized, ErrorResponse{Message: "Missing Authorization header"})
 		return
 	}
 
-	url := fmt.Sprintf(
-		"https://store.xsolla.com/api/v2/project/%d/user/inventory/items?limit=50&offset=0&sandbox=1",
-		h.ProjectID,
-	)
-
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		h.writeJSON(w, http.StatusInternalServerError, ErrorResponse{Message: "Failed to build request"})
-		return
-	}
-
-	req.Header.Set("Authorization", authHeader)
-
-	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Printf("❌ Xsolla Request Error: %v\n", err)
-		h.writeJSON(w, http.StatusInternalServerError, ErrorResponse{Message: "Failed to reach Xsolla"})
-		return
-	}
-	defer resp.Body.Close()
-
-	body, _ := io.ReadAll(resp.Body)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(resp.StatusCode)
-	w.Write(body)
+	w.WriteHeader(http.StatusNoContent)
 }

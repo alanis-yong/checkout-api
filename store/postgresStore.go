@@ -44,29 +44,15 @@ func (q *Queries) GetProducts(ctx context.Context) ([]Product, error) {
 	return items, nil
 }
 
-// AddToInventory executes the constant AddToInventoryQuery
-func (q *Queries) AddToInventory(ctx context.Context, userID string, sku string, qty int) error {
-	_, err := q.db.ExecContext(ctx, AddToInventoryQuery, userID, sku, qty)
+func (q *Queries) AddUserInventory(ctx context.Context, userID string, sku string, quantity int) error {
+	query := `
+    INSERT INTO user_inventory (user_id, sku, quantity)
+    VALUES ($1, $2, $3)
+    ON CONFLICT (user_id, sku) 
+    DO UPDATE SET quantity = user_inventory.quantity + EXCLUDED.quantity;
+  `
+	_, err := q.db.ExecContext(ctx, query, userID, sku, quantity)
 	return err
-}
-
-// GetInventory executes the constant GetInventoryQuery
-func (q *Queries) GetInventory(ctx context.Context, userID string) ([]InventoryItem, error) {
-	rows, err := q.db.QueryContext(ctx, GetInventoryQuery, userID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var items []InventoryItem
-	for rows.Next() {
-		var i InventoryItem
-		if err := rows.Scan(&i.SKU, &i.Quantity); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	return items, nil
 }
 
 func (q *Queries) SeedDatabase(ctx context.Context) error {
