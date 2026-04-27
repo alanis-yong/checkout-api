@@ -136,7 +136,7 @@ func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
 		for _, it := range items {
 			// 🚀 THE KEY CONNECTION: Save to your DB
 			// This ensures your local inventory is always in sync with Xsolla
-			err := h.Store.AddUserInventory(userID, it.SKU, it.Quantity)
+			err := h.Store.AddUserInventory(r.Context(), userID, it.SKU, it.Quantity)
 			if err != nil {
 				fmt.Printf("❌ Failed to update local inventory for SKU %s: %v\n", it.SKU, err)
 				// We still return 204 to Xsolla so they don't spam us with retries
