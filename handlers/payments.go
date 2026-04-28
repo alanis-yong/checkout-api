@@ -117,11 +117,12 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("Token Request for User: [%s], Email: [%s]\n", req.UserID, req.Email)
 
+	// 1. Double check your mapping names
 	formattedItems := make([]map[string]interface{}, len(req.Items))
 	for i, item := range req.Items {
 		formattedItems[i] = map[string]interface{}{
 			"sku":    item.SKU,
-			"amount": item.Quantity, // Xsolla uses 'amount' for quantity here
+			"amount": item.Quantity, // 'amount' is required by the schema
 		}
 	}
 
@@ -131,12 +132,13 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 			"email": map[string]interface{}{"value": req.Email},
 		},
 		"settings": map[string]interface{}{
-			"project_id": h.ProjectID, // Ensure this is the integer ID from your dashboard
+			"project_id": h.ProjectID,
 			"mode":       "sandbox",
 		},
 		"purchase": map[string]interface{}{
-			"items": map[string]interface{}{
-				"list": formattedItems, // This is the "Catalog" structure
+			// 🚀 THE FIX: 'virtual_items' is an object that contains the 'list'
+			"virtual_items": map[string]interface{}{
+				"list": formattedItems,
 			},
 		},
 	}
