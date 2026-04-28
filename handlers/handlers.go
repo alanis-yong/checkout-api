@@ -38,12 +38,11 @@ type XsollaWebhook struct {
 		Quantity int    `json:"quantity"`
 	} `json:"items"`
 
-	// Purchase (The standard for order_paid)
 	Purchase struct {
 		VirtualItems []struct {
 			SKU      string `json:"sku"`
 			Quantity int    `json:"quantity"`
-		} `json:"virtual_items"` // <-- Ensure this is exactly like this
+		} `json:"items"` // Changed from "virtual_items" to "items"
 	} `json:"purchase"`
 }
 
@@ -113,6 +112,7 @@ func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	fmt.Printf("🔍 RAW WEBHOOK BODY: %s\n", string(body))
 
 	var payload XsollaWebhook
 	if err := json.Unmarshal(body, &payload); err != nil {
