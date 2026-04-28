@@ -22,6 +22,86 @@ type TokenRequest struct {
 	} `json:"items"`
 }
 
+// func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
+// 	idempotency := r.Header.Get("Idempotency-Key")
+// 	if idempotency == "" {
+// 		h.writeJSON(w, http.StatusBadRequest, ErrorResponse{Message: "Missing Idempotency-Key"})
+// 		return
+// 	}
+
+// 	var req TokenRequest
+// 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+// 		h.writeJSON(w, http.StatusBadRequest, ErrorResponse{Message: "Invalid request body"})
+// 		return
+// 	}
+
+// 	fmt.Printf("Token Request for User: [%s], Email: [%s]\n", req.UserID, req.Email)
+// 	formattedItems := make([]map[string]interface{}, len(req.Items))
+// 	for i, item := range req.Items {
+// 		formattedItems[i] = map[string]interface{}{
+// 			"sku":    item.SKU,
+// 			"amount": item.Quantity,
+// 		}
+// 	}
+
+// 	xsollaPayload := map[string]interface{}{
+// 		"user": map[string]interface{}{
+// 			"id":      map[string]interface{}{"value": req.UserID},
+// 			"email":   map[string]interface{}{"value": req.Email},
+// 			"country": map[string]interface{}{"value": "US"},
+// 		},
+// 		"purchase": map[string]interface{}{
+// 			"checkout": map[string]interface{}{
+// 				"amount":   req.Amount,
+// 				"currency": req.Currency,
+// 			},
+// 			"virtual_items": map[string]interface{}{
+// 				"items": formattedItems,
+// 			},
+// 		},
+// 		"settings": map[string]interface{}{
+// 			"project_id": h.ProjectID,
+// 			"mode":       "sandbox",
+// 		},
+// 	}
+
+// 	body, _ := json.Marshal(xsollaPayload)
+// 	url := fmt.Sprintf("https://api.xsolla.com/merchant/v2/merchants/%s/token", h.MerchantID)
+
+// 	xReq, _ := http.NewRequest("POST", url, bytes.NewBuffer(body))
+// 	xReq.Header.Set("Content-Type", "application/json")
+// 	xReq.SetBasicAuth(h.MerchantID, h.APIKey)
+
+// 	client := &http.Client{Timeout: 10 * time.Second}
+// 	resp, err := client.Do(xReq)
+// 	if err != nil {
+// 		h.writeJSON(w, http.StatusInternalServerError, ErrorResponse{Message: "Xsolla unreachable"})
+// 		return
+// 	}
+// 	defer resp.Body.Close()
+
+// 	xsollaResponseBody, err := io.ReadAll(resp.Body)
+// 	if err != nil {
+// 		h.writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "Failed to read Xsolla response"})
+// 		return
+// 	}
+
+// 	if resp.StatusCode != http.StatusOK {
+// 		fmt.Printf("❌ Xsolla Error (%d): %s\n", resp.StatusCode, string(xsollaResponseBody))
+// 		h.writeJSON(w, resp.StatusCode, map[string]string{"error": "Xsolla rejected request"})
+// 		return
+// 	}
+
+// 	var xResult map[string]interface{}
+// 	if err := json.Unmarshal(xsollaResponseBody, &xResult); err != nil {
+// 		fmt.Printf("❌ JSON Parse Error: %v\n", err)
+// 		h.writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "Invalid JSON from Xsolla"})
+// 		return
+// 	}
+
+// 	h.writeJSON(w, http.StatusOK, xResult)
+// }
+
 func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 	idempotency := r.Header.Get("Idempotency-Key")
 	if idempotency == "" {
@@ -36,14 +116,17 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Printf("Token Request for User: [%s], Email: [%s]\n", req.UserID, req.Email)
+
+	// 1. Format items specifically for the Cart API
 	formattedItems := make([]map[string]interface{}, len(req.Items))
 	for i, item := range req.Items {
 		formattedItems[i] = map[string]interface{}{
 			"sku":    item.SKU,
-			"amount": item.Quantity,
+			"amount": item.Quantity, // 'amount' here means quantity in Xsolla-speak
 		}
 	}
 
+	// 2. Use the Cart-specific payload structure
 	xsollaPayload := map[string]interface{}{
 		"user": map[string]interface{}{
 			"id":      map[string]interface{}{"value": req.UserID},
@@ -51,25 +134,24 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 			"country": map[string]interface{}{"value": "US"},
 		},
 		"purchase": map[string]interface{}{
-			"checkout": map[string]interface{}{
-				"amount":   req.Amount,
-				"currency": req.Currency,
-			},
-			"virtual_items": map[string]interface{}{
-				"items": formattedItems,
-			},
+			"items": formattedItems, // Items are at the root of 'purchase' in this API
 		},
+		"sandbox": true, // Top-level boolean for this endpoint
 		"settings": map[string]interface{}{
-			"project_id": h.ProjectID,
-			"mode":       "sandbox",
+			"currency": req.Currency,
 		},
 	}
 
 	body, _ := json.Marshal(xsollaPayload)
-	url := fmt.Sprintf("https://api.xsolla.com/merchant/v2/merchants/%s/token", h.MerchantID)
+
+	// 🚀 THE BIG CHANGE: New URL structure using Project ID instead of Merchant ID
+	// Endpoint: POST /merchant/v2/projects/{project_id}/payment/cart
+	url := fmt.Sprintf("https://api.xsolla.com/merchant/v2/projects/%d/payment/cart", h.ProjectID)
 
 	xReq, _ := http.NewRequest("POST", url, bytes.NewBuffer(body))
 	xReq.Header.Set("Content-Type", "application/json")
+
+	// Ensure your APIKey is the 'Merchant API Key' from Xsolla settings
 	xReq.SetBasicAuth(h.MerchantID, h.APIKey)
 
 	client := &http.Client{Timeout: 10 * time.Second}
@@ -81,11 +163,8 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 	defer resp.Body.Close()
 
 	xsollaResponseBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		h.writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "Failed to read Xsolla response"})
-		return
-	}
 
+	// ... (rest of your error handling and JSON writing is fine)
 	if resp.StatusCode != http.StatusOK {
 		fmt.Printf("❌ Xsolla Error (%d): %s\n", resp.StatusCode, string(xsollaResponseBody))
 		h.writeJSON(w, resp.StatusCode, map[string]string{"error": "Xsolla rejected request"})
@@ -94,7 +173,6 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 
 	var xResult map[string]interface{}
 	if err := json.Unmarshal(xsollaResponseBody, &xResult); err != nil {
-		fmt.Printf("❌ JSON Parse Error: %v\n", err)
 		h.writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "Invalid JSON from Xsolla"})
 		return
 	}
