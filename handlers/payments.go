@@ -36,11 +36,12 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Printf("Token Request for User: [%s], Email: [%s]\n", req.UserID, req.Email)
+	// Inside GetXsollaToken
 	formattedItems := make([]map[string]interface{}, len(req.Items))
 	for i, item := range req.Items {
 		formattedItems[i] = map[string]interface{}{
 			"sku":    item.SKU,
-			"amount": item.Quantity,
+			"amount": item.Quantity, // 🚀 Xsolla wants 'amount' here, not 'quantity'
 		}
 	}
 
@@ -55,8 +56,9 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 				"amount":   req.Amount,
 				"currency": req.Currency,
 			},
-			// 🚀 CHANGE THIS: Use 'virtual_items' instead of 'list'
-			"virtual_items": formattedItems,
+			"virtual_items": map[string]interface{}{
+				"items": formattedItems,
+			},
 		},
 		"settings": map[string]interface{}{
 			"project_id": h.ProjectID,
