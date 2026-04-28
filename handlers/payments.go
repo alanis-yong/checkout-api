@@ -50,9 +50,9 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 			"email":   map[string]interface{}{"value": req.Email},
 			"country": map[string]interface{}{"value": "US"},
 		},
+		// 🚀 MOVE LIST HERE (Root level)
+		"list": formattedItems,
 		"purchase": map[string]interface{}{
-			// 🚀 ADD THIS LIST! This is how Xsolla knows WHAT is being bought
-			"list": formattedItems,
 			"checkout": map[string]interface{}{
 				"amount":   req.Amount,
 				"currency": req.Currency,
