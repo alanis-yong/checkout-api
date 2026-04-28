@@ -44,5 +44,7 @@
 -- VALUES ('test_item', 'Test Item', 'Test Item', 9.99, 44.95, 10);
 -- SELECT *
 -- FROM cart_items;
-SELECT *
-FROM user_inventory;
+-- SELECT *
+-- FROM user_inventory;
+ALTER TABLE cart
+  RENAME TO cart_items;

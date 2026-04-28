@@ -46,6 +46,7 @@ func (h *Handler) AddToCart(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		UserID string `json:"user_id"`
 		SKU    string `json:"sku"`
+		Delta  int    `json:"delta"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Invalid request body", 400)
