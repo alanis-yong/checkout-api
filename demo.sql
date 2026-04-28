@@ -46,5 +46,27 @@
 -- FROM cart_items;
 -- SELECT *
 -- FROM user_inventory;
-ALTER TABLE cart
-  RENAME TO cart_items;
+-- ALTER TABLE cart
+--   RENAME TO cart_items;
+-- This creates the table your Go code is looking for
+-- CREATE TABLE IF NOT EXISTS user_inventory (
+--   id SERIAL PRIMARY KEY,
+--   user_id TEXT NOT NULL,
+--   sku TEXT NOT NULL,
+--   quantity INTEGER NOT NULL DEFAULT 1,
+--   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+--   UNIQUE(user_id, sku)
+-- );
+-- -- Also run this just in case your cart table is missing too
+-- CREATE TABLE IF NOT EXISTS cart (
+--   user_id TEXT NOT NULL,
+--   sku TEXT NOT NULL,
+--   quantity INTEGER DEFAULT 1,
+--   PRIMARY KEY (user_id, sku)
+-- );
+INSERT INTO user_inventory (user_id, sku, quantity)
+VALUES (
+    'd1e436f7-64f1-4ac4-b8e8-eb6af0a1ccff',
+    'put_one_of_your_skus_here',
+    5
+  );

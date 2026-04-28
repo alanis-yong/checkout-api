@@ -24,6 +24,7 @@ type Product struct {
 	Name  string  `json:"name"`
 	Price float64 `json:"price"`
 }
+
 type XsollaWebhook struct {
 	NotificationType string `json:"notification_type"`
 	User             struct {
@@ -31,16 +32,18 @@ type XsollaWebhook struct {
 		ExternalID string `json:"external_id"`
 	} `json:"user"`
 
+	// Items (Top level fallback)
 	Items []struct {
 		SKU      string `json:"sku"`
 		Quantity int    `json:"quantity"`
 	} `json:"items"`
 
+	// Purchase (The standard for order_paid)
 	Purchase struct {
 		VirtualItems []struct {
 			SKU      string `json:"sku"`
 			Quantity int    `json:"quantity"`
-		} `json:"virtual_items"`
+		} `json:"virtual_items"` // <-- Ensure this is exactly like this
 	} `json:"purchase"`
 }
 
@@ -124,26 +127,19 @@ func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if payload.NotificationType == "order_paid" || payload.NotificationType == "payment" {
-		// Determine which item list to use
-		items := payload.Items
-		if len(items) == 0 {
-			items = payload.Purchase.VirtualItems
-		}
+		// Look directly into the Purchase.VirtualItems array
+		items := payload.Purchase.VirtualItems
 
 		fmt.Printf("📦 Processing %d items for User: %s\n", len(items), userID)
 
 		for _, it := range items {
-			// 🚀 THE KEY CONNECTION: Save to your DB
-			// This ensures your local inventory is always in sync with Xsolla
 			err := h.Store.AddUserInventory(r.Context(), userID, it.SKU, it.Quantity)
 			if err != nil {
-				fmt.Printf("❌ Failed to update local inventory for SKU %s: %v\n", it.SKU, err)
-				// We still return 204 to Xsolla so they don't spam us with retries
+				fmt.Printf("❌ Failed to update inventory for %s: %v\n", it.SKU, err)
 			} else {
-				fmt.Printf("✅ Successfully added %d of %s to user inventory\n", it.Quantity, it.SKU)
+				fmt.Printf("✅ Successfully added %d of %s\n", it.Quantity, it.SKU)
 			}
 		}
-
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
