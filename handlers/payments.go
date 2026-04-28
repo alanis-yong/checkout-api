@@ -79,13 +79,25 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 	}
 	defer resp.Body.Close()
 
-	xsollaResponseBody, _ := io.ReadAll(resp.Body)
+	xsollaResponseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		h.writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "Failed to read Xsolla response"})
+		return
+	}
+
 	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("❌ Xsolla API Error (%d): %s\n", resp.StatusCode, string(xsollaResponseBody))
+		fmt.Printf("❌ Xsolla Error (%d): %s\n", resp.StatusCode, string(xsollaResponseBody))
+		h.writeJSON(w, resp.StatusCode, map[string]string{"error": "Xsolla rejected request"})
+		return
 	}
 
 	var xResult map[string]interface{}
-	json.NewDecoder(resp.Body).Decode(&xResult)
+	if err := json.Unmarshal(xsollaResponseBody, &xResult); err != nil {
+		fmt.Printf("❌ JSON Parse Error: %v\n", err)
+		h.writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "Invalid JSON from Xsolla"})
+		return
+	}
+
 	h.writeJSON(w, http.StatusOK, xResult)
 }
 
