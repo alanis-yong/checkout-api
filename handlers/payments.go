@@ -39,8 +39,8 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 	formattedItems := make([]map[string]interface{}, len(req.Items))
 	for i, item := range req.Items {
 		formattedItems[i] = map[string]interface{}{
-			"sku":    item.SKU,
-			"amount": item.Quantity,
+			"sku":      item.SKU,
+			"quantity": item.Quantity,
 		}
 	}
 
@@ -55,6 +55,7 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 				"amount":   req.Amount,
 				"currency": req.Currency,
 			},
+			// 🚀 THE FIX: Wrap the array in an object with the key "items"
 			"virtual_items": map[string]interface{}{
 				"items": formattedItems,
 			},
