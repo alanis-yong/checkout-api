@@ -40,7 +40,7 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 	for i, item := range req.Items {
 		formattedItems[i] = map[string]interface{}{
 			"sku":      item.SKU,
-			"quantity": item.Quantity, // Use "quantity" here
+			"quantity": item.Quantity,
 		}
 	}
 
@@ -50,13 +50,13 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 			"email":   map[string]interface{}{"value": req.Email},
 			"country": map[string]interface{}{"value": "US"},
 		},
-		// 🚀 MOVE LIST HERE (Root level)
-		"list": formattedItems,
 		"purchase": map[string]interface{}{
 			"checkout": map[string]interface{}{
 				"amount":   req.Amount,
 				"currency": req.Currency,
 			},
+			// 🚀 CHANGE THIS: Use 'virtual_items' instead of 'list'
+			"virtual_items": formattedItems,
 		},
 		"settings": map[string]interface{}{
 			"project_id": h.ProjectID,
