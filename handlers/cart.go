@@ -13,7 +13,7 @@ func (h *Handler) GetCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rows, err := h.DB.Query("SELECT sku, quantity FROM cart_items WHERE user_id = $1", userID)
+	rows, err := h.DB.Query("SELECT sku, quantity FROM cart WHERE user_id = $1", userID)
 	if err != nil {
 		http.Error(w, "DB Error: "+err.Error(), 500)
 		return
@@ -54,10 +54,10 @@ func (h *Handler) AddToCart(w http.ResponseWriter, r *http.Request) {
 	}
 
 	query := `
-       INSERT INTO cart_items (user_id, sku, quantity)
+       INSERT INTO cart (user_id, sku, quantity)
        VALUES ($1, $2, 1)
        ON CONFLICT (user_id, sku)
-       DO UPDATE SET quantity = cart_items.quantity + 1`
+       DO UPDATE SET quantity = cart.quantity + 1`
 
 	_, err := h.DB.Exec(query, req.UserID, req.SKU)
 	if err != nil {
@@ -81,7 +81,7 @@ func (h *Handler) UpdateCartQuantity(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err := h.DB.Exec(`
-       UPDATE cart_items
+       UPDATE cart
        SET quantity = quantity + $1
        WHERE user_id = $2 AND sku = $3`, req.Delta, req.UserID, req.SKU)
 
@@ -91,7 +91,7 @@ func (h *Handler) UpdateCartQuantity(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Clean up: If an item hits 0 or less, remove it from the table
-	h.DB.Exec("DELETE FROM cart_items WHERE quantity <= 0")
+	h.DB.Exec("DELETE FROM cart WHERE quantity <= 0")
 
 	w.WriteHeader(http.StatusOK)
 }
@@ -104,7 +104,7 @@ func (h *Handler) ClearCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := h.DB.Exec("DELETE FROM cart_items WHERE user_id = $1", userID)
+	_, err := h.DB.Exec("DELETE FROM cart WHERE user_id = $1", userID)
 	if err != nil {
 		http.Error(w, "DB Error", 500)
 		return
