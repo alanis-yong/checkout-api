@@ -28,6 +28,14 @@ func main() {
 	projectID, _ := strconv.Atoi(projectIDStr)
 
 	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	if err != nil {
+		log.Fatal("Connection string error:", err)
+	}
+
+	// Add this! If this fails, the server won't start with a broken DB
+	if err := db.Ping(); err != nil {
+		log.Fatal("Database is unreachable:", err)
+	}
 
 	// 4. Initialize Handler with your Xsolla credentials
 	h := &handlers.Handler{
