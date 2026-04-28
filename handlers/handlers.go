@@ -31,12 +31,13 @@ type XsollaWebhook struct {
 		ExternalID string `json:"external_id"`
 	} `json:"user"`
 
-	// Xsolla sends items here for order_paid!
+	// Xsolla sometimes sends items at the top level
 	Items []struct {
 		SKU      string `json:"sku"`
 		Quantity int    `json:"quantity"`
 	} `json:"items"`
 
+	// BUT they usually send them here for successful payments
 	Purchase struct {
 		VirtualItems []struct {
 			SKU      string `json:"sku"`
