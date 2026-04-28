@@ -39,11 +39,10 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 	formattedItems := make([]map[string]interface{}, len(req.Items))
 	for i, item := range req.Items {
 		formattedItems[i] = map[string]interface{}{
-			"sku":    item.SKU,      // Ensure item.SKU is the field name in your TokenRequest struct
-			"amount": item.Quantity, // Renaming your internal 'Quantity' to Xsolla's 'amount'
+			"sku":      item.SKU,
+			"quantity": item.Quantity, // Use "quantity" here
 		}
 	}
-	// --- NEW MAPPING STEP END ---
 
 	xsollaPayload := map[string]interface{}{
 		"user": map[string]interface{}{
@@ -52,6 +51,8 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 			"country": map[string]interface{}{"value": "US"},
 		},
 		"purchase": map[string]interface{}{
+			// 🚀 ADD THIS LIST! This is how Xsolla knows WHAT is being bought
+			"list": formattedItems,
 			"checkout": map[string]interface{}{
 				"amount":   req.Amount,
 				"currency": req.Currency,
@@ -60,7 +61,6 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 		"settings": map[string]interface{}{
 			"project_id": h.ProjectID,
 			"mode":       "sandbox",
-			"currency":   req.Currency,
 		},
 	}
 
