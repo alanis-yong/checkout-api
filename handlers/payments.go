@@ -39,8 +39,8 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 	formattedItems := make([]map[string]interface{}, len(req.Items))
 	for i, item := range req.Items {
 		formattedItems[i] = map[string]interface{}{
-			"sku":      item.SKU,
-			"quantity": item.Quantity,
+			"sku":    item.SKU,
+			"amount": item.Quantity,
 		}
 	}
 
