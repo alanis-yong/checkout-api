@@ -55,8 +55,10 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 				"amount":   req.Amount,
 				"currency": req.Currency,
 			},
-			// 🚀 CHANGE THIS: Use 'virtual_items' instead of 'list'
-			"virtual_items": formattedItems,
+			// 🚀 THE FIX: Wrap the array in an object with the key "items"
+			"virtual_items": map[string]interface{}{
+				"items": formattedItems,
+			},
 		},
 		"settings": map[string]interface{}{
 			"project_id": h.ProjectID,
