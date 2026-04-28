@@ -117,41 +117,37 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("Token Request for User: [%s], Email: [%s]\n", req.UserID, req.Email)
 
-	// 1. Format items specifically for the Cart API
 	formattedItems := make([]map[string]interface{}, len(req.Items))
 	for i, item := range req.Items {
 		formattedItems[i] = map[string]interface{}{
 			"sku":    item.SKU,
-			"amount": item.Quantity, // 'amount' here means quantity in Xsolla-speak
+			"amount": item.Quantity, // Xsolla uses 'amount' for quantity here
 		}
 	}
 
-	// 2. Use the Cart-specific payload structure
 	xsollaPayload := map[string]interface{}{
 		"user": map[string]interface{}{
-			"id":      map[string]interface{}{"value": req.UserID},
-			"email":   map[string]interface{}{"value": req.Email},
-			"country": map[string]interface{}{"value": "US"},
+			"id":    map[string]interface{}{"value": req.UserID},
+			"email": map[string]interface{}{"value": req.Email},
+		},
+		"settings": map[string]interface{}{
+			"project_id": h.ProjectID, // Ensure this is the integer ID from your dashboard
+			"mode":       "sandbox",
 		},
 		"purchase": map[string]interface{}{
-			"items": formattedItems, // Items are at the root of 'purchase' in this API
-		},
-		"sandbox": true, // Top-level boolean for this endpoint
-		"settings": map[string]interface{}{
-			"currency": req.Currency,
+			"items": map[string]interface{}{
+				"list": formattedItems, // This is the "Catalog" structure
+			},
 		},
 	}
 
 	body, _ := json.Marshal(xsollaPayload)
 
-	// 🚀 THE BIG CHANGE: New URL structure using Project ID instead of Merchant ID
-	// Endpoint: POST /merchant/v2/projects/{project_id}/payment/cart
-	url := fmt.Sprintf("https://api.xsolla.com/merchant/v2/projects/%d/payment/cart", h.ProjectID)
+	// 🚀 USE THE MERCHANT TOKEN URL (Most reliable)
+	url := fmt.Sprintf("https://api.xsolla.com/merchant/v2/merchants/%s/token", h.MerchantID)
 
 	xReq, _ := http.NewRequest("POST", url, bytes.NewBuffer(body))
 	xReq.Header.Set("Content-Type", "application/json")
-
-	// Ensure your APIKey is the 'Merchant API Key' from Xsolla settings
 	xReq.SetBasicAuth(h.MerchantID, h.APIKey)
 
 	client := &http.Client{Timeout: 10 * time.Second}
