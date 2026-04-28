@@ -55,12 +55,15 @@ func (h *Handler) AddToCart(w http.ResponseWriter, r *http.Request) {
 
 	query := `
        INSERT INTO cart (user_id, sku, quantity)
-       VALUES ($1, $2, 1)
+       VALUES ($1, $2, $3) 
        ON CONFLICT (user_id, sku)
-       DO UPDATE SET quantity = cart.quantity + 1`
+       DO UPDATE SET quantity = cart.quantity + EXCLUDED.quantity`
 
-	_, err := h.DB.Exec(query, req.UserID, req.SKU)
+	// FIX: Ensure you pass THREE arguments: UserID, SKU, and the quantity (1)
+	_, err := h.DB.Exec(query, req.UserID, req.SKU, 1)
+
 	if err != nil {
+		// This is likely where your 500 is coming from!
 		http.Error(w, "DB Error: "+err.Error(), 500)
 		return
 	}
