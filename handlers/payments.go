@@ -46,7 +46,7 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 	}
 
 	xsollaPayload := map[string]interface{}{
-		"sandbox": true
+		"sandbox": true,
 		"user": map[string]interface{}{
 			"id": map[string]interface{}{
 				"value": req.UserID,
