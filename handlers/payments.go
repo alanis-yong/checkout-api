@@ -67,6 +67,7 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 		"settings": map[string]interface{}{
 			"language":    "en",
 			"external_id": idempotency,
+			"mode":        "sandbox",
 			"currency":    req.Currency,
 			"return_url":  "https://xsolla-alanis-gamestore.vercel.app/store",
 			"ui": map[string]interface{}{
