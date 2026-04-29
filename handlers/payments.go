@@ -63,7 +63,7 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 	}
 
 	body, _ := json.Marshal(xsollaPayload)
-	url := fmt.Sprintf("https://store.xsolla.com/api/v3/project/%s/admin/payment/token", h.ProjectID)
+	url := fmt.Sprintf("https://store.xsolla.com/api/v3/project/%d/admin/payment/token", h.ProjectID)
 
 	xReq, _ := http.NewRequest("POST", url, bytes.NewBuffer(body))
 	xReq.Header.Set("Content-Type", "application/json")
