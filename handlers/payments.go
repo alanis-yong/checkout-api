@@ -40,8 +40,8 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 	formattedItems := make([]map[string]interface{}, len(req.Items))
 	for i, item := range req.Items {
 		formattedItems[i] = map[string]interface{}{
-			"sku":    item.SKU,
-			"amount": item.Quantity, // 🚀 Xsolla wants 'amount' here, not 'quantity'
+			"sku":      item.SKU,
+			"quantity": item.Quantity, // Use 'quantity' to match the Admin API spec
 		}
 	}
 
@@ -49,25 +49,21 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 		"user": map[string]interface{}{
 			"id":      map[string]interface{}{"value": req.UserID},
 			"email":   map[string]interface{}{"value": req.Email},
-			"country": map[string]interface{}{"value": "US"},
+			"country": map[string]interface{}{"value": "US", "allow_modify": false},
 		},
 		"purchase": map[string]interface{}{
-			"checkout": map[string]interface{}{
-				"amount":   req.Amount,
-				"currency": req.Currency,
-			},
-			"virtual_items": map[string]interface{}{
-				"items": formattedItems,
-			},
+			"items": formattedItems, // Admin API uses "items" directly under "purchase"
 		},
 		"settings": map[string]interface{}{
-			"project_id": h.ProjectID,
+			"currency":   req.Currency,
+			"language":   "en", // Or pull from req if available
 			"mode":       "sandbox",
+			"return_url": "https://your-store-url.com/return",
 		},
 	}
 
 	body, _ := json.Marshal(xsollaPayload)
-	url := fmt.Sprintf("https://api.xsolla.com/merchant/v2/merchants/%s/token", h.MerchantID)
+	url := fmt.Sprintf("https://secure.xsolla.com/paystation4/?token={token}", h.MerchantID)
 
 	xReq, _ := http.NewRequest("POST", url, bytes.NewBuffer(body))
 	xReq.Header.Set("Content-Type", "application/json")
