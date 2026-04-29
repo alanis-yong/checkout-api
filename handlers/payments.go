@@ -52,18 +52,18 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 			"country": map[string]interface{}{"value": "US", "allow_modify": false},
 		},
 		"purchase": map[string]interface{}{
-			"items": formattedItems, // Admin API uses "items" directly under "purchase"
+			"items": formattedItems,
 		},
 		"settings": map[string]interface{}{
 			"currency":   req.Currency,
 			"language":   "en", // Or pull from req if available
 			"mode":       "sandbox",
-			"return_url": "https://your-store-url.com/return",
+			"return_url": "https://xsolla-alanis-gamestore.vercel.app/store",
 		},
 	}
 
 	body, _ := json.Marshal(xsollaPayload)
-	url := fmt.Sprintf("https://secure.xsolla.com/paystation4/?token={token}", h.MerchantID)
+	url := fmt.Sprintf("https://store.xsolla.com/api/v3/project/%s/admin/payment/token", h.ProjectID)
 
 	xReq, _ := http.NewRequest("POST", url, bytes.NewBuffer(body))
 	xReq.Header.Set("Content-Type", "application/json")
