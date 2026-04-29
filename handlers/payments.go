@@ -47,18 +47,31 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 
 	xsollaPayload := map[string]interface{}{
 		"user": map[string]interface{}{
-			"id":      map[string]interface{}{"value": req.UserID},
-			"email":   map[string]interface{}{"value": req.Email},
-			"country": map[string]interface{}{"value": "US", "allow_modify": false},
+			"id": map[string]interface{}{
+				"value": req.UserID,
+			},
+			"name": map[string]interface{}{
+				"value": req.UserID, // Using ID as name since we don't have a name field yet
+			},
+			"email": map[string]interface{}{
+				"value": req.Email,
+			},
+			"country": map[string]interface{}{
+				"value":        "US",
+				"allow_modify": false,
+			},
 		},
 		"purchase": map[string]interface{}{
 			"items": formattedItems,
 		},
 		"settings": map[string]interface{}{
-			"currency":   req.Currency,
-			"language":   "en", // Or pull from req if available
-			"mode":       "sandbox",
-			"return_url": "https://xsolla-alanis-gamestore.vercel.app/store",
+			"language":    "en",
+			"external_id": idempotency,
+			"currency":    req.Currency,
+			"return_url":  "https://xsolla-alanis-gamestore.vercel.app/store",
+			"ui": map[string]interface{}{
+				"theme": "63295aab2e47fab76f7708e3",
+			},
 		},
 	}
 
