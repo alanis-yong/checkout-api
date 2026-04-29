@@ -40,8 +40,8 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 	formattedItems := make([]map[string]interface{}, len(req.Items))
 	for i, item := range req.Items {
 		formattedItems[i] = map[string]interface{}{
-			"sku":      item.SKU,
-			"quantity": item.Quantity, // Use 'quantity' to match the Admin API spec
+			"sku":    item.SKU,
+			"amount": item.Quantity,
 		}
 	}
 
@@ -52,7 +52,7 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 				"value": req.UserID,
 			},
 			"name": map[string]interface{}{
-				"value": req.UserID, // Using ID as name since we don't have a name field yet
+				"value": req.UserID,
 			},
 			"email": map[string]interface{}{
 				"value": req.Email,
