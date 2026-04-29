@@ -40,7 +40,7 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 	formattedItems := make([]map[string]interface{}, len(req.Items))
 	for i, item := range req.Items {
 		formattedItems[i] = map[string]interface{}{
-			"sku":    item.SKU,
+			"sku":      item.SKU,
 			"quantity": item.Quantity,
 		}
 	}
@@ -70,7 +70,9 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 			"external_id": idempotency,
 			"currency":    req.Currency,
 			"return_url":  "https://xsolla-alanis-gamestore.vercel.app/store",
-			},
+			// "ui": map[string]interface{}{
+			// "theme": "63295aab2e47fab76f7708e3",
+			// },
 		},
 	}
 
