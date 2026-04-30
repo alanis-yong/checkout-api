@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"time"
 )
@@ -46,6 +47,7 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 	}
 
 	xsollaPayload := map[string]interface{}{
+		"sandbox": true,
 		"user": map[string]interface{}{
 			"id": map[string]interface{}{
 				"value": req.UserID,
@@ -65,8 +67,6 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 			"items": formattedItems,
 		},
 		"settings": map[string]interface{}{
-			"project_id":  h.ProjectID,
-			"sandbox":     true,
 			"language":    "en",
 			"external_id": idempotency,
 			"currency":    req.Currency,
@@ -76,6 +76,8 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 			},
 		},
 	}
+
+	slog.Info("Sending request to Xsolla", "payload", xsollaPayload)
 
 	body, _ := json.Marshal(xsollaPayload)
 	url := fmt.Sprintf("https://store.xsolla.com/api/v3/project/%d/admin/payment/token", h.ProjectID)
