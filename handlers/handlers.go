@@ -2,21 +2,25 @@ package handlers
 
 import (
 	"checkout-api/store"
+	"crypto/sha1"
 	"database/sql"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 )
 
 // Handler holds the configuration for the entire API
 type Handler struct {
-	MerchantID string
-	APIKey     string
-	ProjectID  int
-	Store      *store.Queries
-	DB         *sql.DB // <--- MAKE SURE THIS IS HERE
+	MerchantID    string
+	APIKey        string
+	ProjectID     int
+	SigningSecret string
+	Store         *store.Queries
+	DB            *sql.DB
 }
 
 type Product struct {
@@ -31,18 +35,14 @@ type XsollaWebhook struct {
 		ID         string `json:"id"`
 		ExternalID string `json:"external_id"`
 	} `json:"user"`
-
-	// Items (Top level fallback)
-	Items []struct {
-		SKU      string `json:"sku"`
-		Quantity int    `json:"quantity"`
-	} `json:"items"`
-
 	Purchase struct {
-		VirtualItems []struct {
-			SKU      string `json:"sku"`
-			Quantity int    `json:"quantity"`
-		} `json:"items"` // Changed from "virtual_items" to "items"
+		// Xsolla webhook sends: purchase.virtual_items.items[]
+		VirtualItems struct {
+			Items []struct {
+				SKU      string `json:"sku"`
+				Quantity int    `json:"quantity"`
+			} `json:"items"`
+		} `json:"virtual_items"`
 	} `json:"purchase"`
 }
 
@@ -106,6 +106,18 @@ func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	h.writeJSON(w, http.StatusOK, result)
 }
 
+func verifyXsollaSignature(body []byte, authHeader, secret string) bool {
+	const prefix = "Signature "
+	if !strings.HasPrefix(authHeader, prefix) {
+		return false
+	}
+	provided := authHeader[len(prefix):]
+	h := sha1.New()
+	h.Write(body)
+	h.Write([]byte(secret))
+	return hex.EncodeToString(h.Sum(nil)) == provided
+}
+
 func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -114,21 +126,29 @@ func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Printf("🔍 RAW WEBHOOK BODY: %s\n", string(body))
 
+	if h.SigningSecret != "" {
+		authHeader := r.Header.Get("Authorization")
+		if !verifyXsollaSignature(body, authHeader, h.SigningSecret) {
+			fmt.Printf("❌ Invalid webhook signature (header: %q)\n", authHeader)
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+	}
+
 	var payload XsollaWebhook
 	if err := json.Unmarshal(body, &payload); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	// Use ExternalID if available, otherwise fallback to ID
+	// ExternalID in Xsolla's webhook corresponds to user.id.value sent during token creation
 	userID := payload.User.ExternalID
 	if userID == "" {
 		userID = payload.User.ID
 	}
 
 	if payload.NotificationType == "order_paid" || payload.NotificationType == "payment" {
-		// Look directly into the Purchase.VirtualItems array
-		items := payload.Purchase.VirtualItems
+		items := payload.Purchase.VirtualItems.Items
 
 		fmt.Printf("📦 Processing %d items for User: %s\n", len(items), userID)
 
@@ -140,8 +160,6 @@ func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
 				fmt.Printf("✅ Successfully added %d of %s\n", it.Quantity, it.SKU)
 			}
 		}
-		w.WriteHeader(http.StatusNoContent)
-		return
 	}
 
 	w.WriteHeader(http.StatusNoContent)
@@ -155,7 +173,6 @@ func (h *Handler) GetInventory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 2. Fetch from your local PostgreSQL (using the Store method we created)
 	inventory, err := h.Store.GetInventory(r.Context(), userID)
 	if err != nil {
 		fmt.Printf("❌ Database error fetching inventory: %v\n", err)
@@ -163,6 +180,9 @@ func (h *Handler) GetInventory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 3. Return the items to your React frontend
+	// Always return an array (never null) so the frontend can iterate safely
+	if inventory == nil {
+		inventory = []store.InventoryItem{}
+	}
 	h.writeJSON(w, http.StatusOK, inventory)
 }

@@ -37,13 +37,13 @@ func main() {
 		log.Fatal("Database is unreachable:", err)
 	}
 
-	// 4. Initialize Handler with your Xsolla credentials
 	h := &handlers.Handler{
-		MerchantID: merchantID,
-		APIKey:     apiKey,
-		ProjectID:  projectID,
-		DB:         db,
-		Store:      store.New(db),
+		MerchantID:    merchantID,
+		APIKey:        apiKey,
+		ProjectID:     projectID,
+		SigningSecret: os.Getenv("SIGNING_SECRET"),
+		DB:            db,
+		Store:         store.New(db),
 	}
 	// 5. Setup Routes
 	mux := http.NewServeMux()

@@ -16,7 +16,6 @@ require (
 	github.com/go-openapi/swag/stringutils v0.25.5 // indirect
 	github.com/go-openapi/swag/typeutils v0.25.5 // indirect
 	github.com/go-openapi/swag/yamlutils v0.25.5 // indirect
-	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/kr/pretty v0.3.0 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	github.com/stretchr/testify v1.11.1 // indirect
@@ -27,6 +26,9 @@ require (
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 )
 
-require github.com/swaggo/swag v1.16.6
+require (
+	github.com/joho/godotenv v1.5.1
+	github.com/swaggo/swag v1.16.6
+)
 
 replace github.com/go-playground/validator/v10 => github.com/go-playground/validator/v10 v10.25.0
