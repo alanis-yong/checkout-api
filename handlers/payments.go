@@ -66,7 +66,7 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 		},
 		"settings": map[string]interface{}{
 			"project_id":  h.ProjectID,
-			"mode":        "sandbox",
+			"sandbox":     true,
 			"language":    "en",
 			"external_id": idempotency,
 			"currency":    req.Currency,
