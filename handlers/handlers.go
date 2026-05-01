@@ -170,7 +170,8 @@ func (h *Handler) HandleXsollaWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if payload.NotificationType == "order_paid" || payload.NotificationType == "payment" {
-		items := payload.Purchase.VirtualItems.Items
+		// items := payload.Purchase.VirtualItems.Items
+		items := payload.Items
 
 		fmt.Printf("📦 Processing %d items for User: %s\n", len(items), userID)
 
