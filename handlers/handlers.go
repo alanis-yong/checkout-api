@@ -29,20 +29,42 @@ type Product struct {
 	Price float64 `json:"price"`
 }
 
+// type XsollaWebhook struct {
+// 	NotificationType string `json:"notification_type"`
+// 	User             struct {
+// 		ID         string `json:"id"`
+// 		ExternalID string `json:"external_id"`
+// 	} `json:"user"`
+// 	Purchase struct {
+// 		VirtualItems struct {
+// 			Items []struct {
+// 				SKU      string `json:"sku"`
+// 				Quantity int    `json:"quantity"`
+// 			} `json:"items"`
+// 		} `json:"virtual_items"`
+// 	} `json:"purchase"`
+// }
+
 type XsollaWebhook struct {
 	NotificationType string `json:"notification_type"`
-	User             struct {
+	// Move Items here - top level!
+	Items []struct {
+		SKU      string `json:"sku"`
+		Quantity int    `json:"quantity"`
+	} `json:"items"`
+
+	User struct {
 		ID         string `json:"id"`
 		ExternalID string `json:"external_id"`
 	} `json:"user"`
+
+	// You can keep Purchase here if you want to capture 'total amount'
+	// but the items list isn't inside it in this specific webhook.
 	Purchase struct {
-		// Xsolla webhook sends: purchase.virtual_items.items[]
-		VirtualItems struct {
-			Items []struct {
-				SKU      string `json:"sku"`
-				Quantity int    `json:"quantity"`
-			} `json:"items"`
-		} `json:"virtual_items"`
+		Total struct {
+			Amount   float64 `json:"amount"`
+			Currency string  `json:"currency"`
+		} `json:"total"`
 	} `json:"purchase"`
 }
 
