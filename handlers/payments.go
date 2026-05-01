@@ -99,8 +99,8 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("❌ Xsolla Error (%d): %s\n", resp.StatusCode, string(xsollaResponseBody))
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		fmt.Printf("❌ Real Xsolla Error (%d): %s\n", resp.StatusCode, string(xsollaResponseBody))
 		h.writeJSON(w, resp.StatusCode, map[string]string{"error": "Xsolla rejected request"})
 		return
 	}
