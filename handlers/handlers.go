@@ -29,22 +29,6 @@ type Product struct {
 	Price float64 `json:"price"`
 }
 
-// type XsollaWebhook struct {
-// 	NotificationType string `json:"notification_type"`
-// 	User             struct {
-// 		ID         string `json:"id"`
-// 		ExternalID string `json:"external_id"`
-// 	} `json:"user"`
-// 	Purchase struct {
-// 		VirtualItems struct {
-// 			Items []struct {
-// 				SKU      string `json:"sku"`
-// 				Quantity int    `json:"quantity"`
-// 			} `json:"items"`
-// 		} `json:"virtual_items"`
-// 	} `json:"purchase"`
-// }
-
 type XsollaWebhook struct {
 	NotificationType string `json:"notification_type"`
 	// Move Items here - top level!

@@ -59,8 +59,8 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 				"value": req.Email,
 			},
 			"country": map[string]interface{}{
-				"value":        "US",
-				"allow_modify": false,
+				"value":        "MY",
+				"allow_modify": true,
 			},
 		},
 		"purchase": map[string]interface{}{
