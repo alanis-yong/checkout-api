@@ -60,7 +60,7 @@ func (h *Handler) GetXsollaToken(w http.ResponseWriter, r *http.Request) {
 			},
 			"country": map[string]interface{}{
 				"value":        "US",
-				"allow_modify": true,
+				"allow_modify": false,
 			},
 		},
 		"purchase": map[string]interface{}{
